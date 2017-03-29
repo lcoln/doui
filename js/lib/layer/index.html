@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Examples</title>
+<meta name="description" content="">
+<meta name="keywords" content="">
+<link href="../css/base.min.css" rel="stylesheet">
+<style type="text/css">
+    body {background:url(/123.png) no-repeat;}
+    .a {display:inline-block;min-width:80px;height:32px;margin:10px;padding:0 10px;text-decoration:none;border:1px solid #ddd;line-height:30px;}
+</style>
+</head>
+<body ms-controller="test">
+
+    <a class="a" href="javascript:;" ms-click="layer.alert('测试alert内容')">alert层</a>
+    <a class="a" href="javascript:;" ms-click="layer.confirm('测试confirm内容')">confirm层</a>
+    <a class="a" href="javascript:;" ms-click="layer.msg('测试msg内容')">msg层</a>
+    <a class="a" href="javascript:;" ms-click="layer.prompt('测试prompt内容')">prompt层</a>
+    <a class="a" href="javascript:;" ms-click="layer.loading('测试loading内容')">loading层</a>
+
+
+
+
+
+
+
+<script src="../avalon.modern.min.js"></script>
+
+<script type="text/javascript">
+    
+require(['layer/layer.js'], function(lay){
+
+    avalon.define({
+        $id: 'test'
+    })
+
+    layer.alert('测试loading内容blabla')
+    layer.confirm('测试loading内容blabla测试loading内容blabla测试loading内容blabla', {offset: {x: '550px', y: '690px'}})
+    layer.open({content: '测试loading内容blabla', offset: {x: '350px', y: '390px'}})
+
+    avalon.scan()
+
+})
+
+</script>
+    
+</body>
+</html>

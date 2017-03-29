@@ -1,0 +1,40 @@
+@charset "UTF-8";
+/**
+ * 
+ * @authors yutent (yutent@doui.cc)
+ * @date    2016-02-14 14:00:06
+ * 
+ */
+.do-ui-datepicker {position:relative;z-index:65534;width:100%;height:100%;}
+.do-ui-datepicker a {text-decoration:none;}
+.do-ui-datepicker .date-input {float:left;width:100%;height:100%;border:1px solid #ddd;line-height:18px;padding:0 5px;}
+
+.do-ui-datepicker .calendar {position:absolute;z-index:65534;left:0;top:98%;width:230px;height:auto;min-height:60px;padding:10px;border:1px solid #ddd;background:#fff;font-size:13px;box-shadow:0 0 5px rgba(0,0,0,.1)}
+
+.do-ui-datepicker .calendar-hd {width:100%;height:30px;line-height:30px;background:#f3f3f3;color:#666;text-align:center;}
+.do-ui-datepicker .calendar-contrl {position:relative;width:90%;height:30px;margin:0 5%;line-height:30px;border-bottom:1px solid #eee;color:#09f;text-align:center;}
+.do-ui-datepicker .calendar-contrl a {position:absolute;top:0;left:0;width:30px;color:#09f;}
+.do-ui-datepicker .calendar-contrl .prev-month {left:30px;}
+.do-ui-datepicker .calendar-contrl .next-month {left:auto;right:30px;}
+.do-ui-datepicker .calendar-contrl .next-year {left:auto;right:0;}
+
+.do-ui-datepicker .calendar-table {position:relative;width:90%;height:auto;margin:0 5%;line-height:25px;color:#888;text-align:center;}
+.do-ui-datepicker .calendar-table .tr {width:100%;height:auto;min-height:25px;}
+.do-ui-datepicker .calendar-table .tr.tr-hd {border-bottom:1px solid #eee;margin-bottom:3px;}
+.do-ui-datepicker .calendar-table .tr .td {float:left;width:14.28%;height:25px;}
+.do-ui-datepicker .calendar-table .tr .do-st-hand:hover {background:#b6def9;}
+.do-ui-datepicker .calendar-table .tr .td.weeken {color:#f30;}
+.do-ui-datepicker .calendar-table .tr .td.selected {background:#09f;color:#fff;}
+.do-ui-datepicker .calendar-table .tr .td.disabled {color:#ddd;cursor:default;}
+
+.do-ui-datepicker .time-contrl {position:relative;width:90%;height:30px;margin:5px 5%;line-height:30px;border-top:1px solid #eee;color:#888;}
+.do-ui-datepicker .time-contrl label {float:left;height:20px;margin:5px 5px 5px 0;}
+.do-ui-datepicker .time-contrl input {float:left;width:25px;height:20px;padding:0 3px;line-height:17px;outline:none;}
+.do-ui-datepicker .time-contrl label:after {float:right;height:20px;line-height:20px;font-size:12px;}
+.do-ui-datepicker .time-contrl .hours:after {content:"时"}
+.do-ui-datepicker .time-contrl .minutes:after {content:"分"}
+.do-ui-datepicker .time-contrl .seconds:after {content:"秒"}
+.do-ui-datepicker .time-contrl .now {float:right;width:40px;height:20px;margin:5px;border:1px solid #ddd;border-radius:3px;line-height:20px;background:#f7f7f7;color:#888;text-align:center;}
+.do-ui-datepicker .time-contrl .now:hover {background:#eee;}
+.do-ui-datepicker .time-contrl .now:active {background:#e7e7e7;}
+.do-ui-datepicker .calendar-tips {position:absolute;z-index:65535;left:25%;top:40%;width:50%;height:30px;line-height:30px;background:rgba(0,0,0,.7);color:#fff;font-size:12px;text-align:center;}

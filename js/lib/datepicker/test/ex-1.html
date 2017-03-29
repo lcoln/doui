@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>测试1</title>
+<meta name="description" content="">
+<meta name="keywords" content="">
+<link href="../../css/base.min.css" rel="stylesheet">
+<style>
+    .do-mod-test {width:800px;height:100px;margin:30px;padding:30px;border:1px solid #ddd;}
+    .do-mod-test section {float:left;;;;width:35%;height:35px;margin:0 3%;line-height:35px;}
+    .do-mod-test section:nth-child(2) {border:1px solid #ddd;}
+    .do-mod-test section .label {float:left;width:35%;height:35px;text-align:center;}
+    .do-mod-test section .date {float:left;width:65%;}
+</style>
+</head>
+<body>
+
+
+<div class="do-mod-test" ms-controller="test">
+
+        <section>
+            <span class="label">示例1:</span>
+            <do:datepicker config="dp" duplex="test.ex1" border="1" class="date" radius="3"></do:datepicker>
+        </section>
+
+        
+        <section>
+            <span class="label">示例2:</span>
+            <do:datepicker config="dp" duplex="test.ex2" border="0" show-time="true" class="date"></do:datepicker>
+        </section>
+
+
+</div>
+
+
+<script src="../../avalon.modern.min.js"></script>
+<script>
+    ;(function(av){
+
+        require(['./datepicker/doui.datepicker'], function(){
+
+
+            var test = av.define({
+                    $id: 'test',
+                    ex1: '2016-01-02',
+                    ex2: '2015-12-06 20:22:12',
+                    dp: {
+                        callback: function(d){
+                            console.log(d)
+                        },
+                        maxDate: '2017-02-05',
+                        format: 'Y 第W周'
+                    }
+                });
+
+                av.scan()
+
+
+
+
+        })
+
+
+    })(avalon)
+</script>
+</body>
+</html>

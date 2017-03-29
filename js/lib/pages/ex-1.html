@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Examples-1</title>
+<meta name="description" content="">
+<meta name="keywords" content="">
+<link href="../css/base.min.css" rel="stylesheet">
+<style>
+    .do-mod-test {width:800px;height:100px;margin:30px;padding:30px;border:1px solid #ddd;}
+    .do-mod-test .date-start {width:100%;height:35px;}
+</style>
+</head>
+<body>
+
+
+<div class="do-mod-test" ms-controller="test">
+
+        <div class="pages" ms-widget="pages" data-pages-skin="red"></div>
+
+</div>
+
+
+
+<script src="../avalon.modern.min.js"></script>
+<script>
+
+;(function(A){
+        
+    require(['./pages/pages'], function(){
+
+        var test = A.define({
+            $id: 'test',
+            aa: '112233',
+            pages: {
+                callback: function(id){
+                    console.log(id);
+                },
+                total: 30
+            }
+        });
+
+        A.scan();
+
+    })
+
+
+})(avalon);
+    
+    
+
+
+</script>
+    
+</body>
+</html>
