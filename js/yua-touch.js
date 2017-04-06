@@ -35,7 +35,7 @@ var expose = Date.now()
 //http://stackoverflow.com/questions/7290086/javascript-use-strict-and-nicks-find-global-function
 var DOC = window.document
 var head = DOC.head //HEAD元素
-head.insertAdjacentHTML("afterBegin", '<yua :skip class="yua-hide"><style id="yua-style">.yua-hide{ display: none!important } .do-rule-tips {position:absolute;display:table;z-index:10240;min-width:75px;height:30px;padding:7px 8px;line-height:16px;color:#333;background:#f9ca05;white-space:pre;} .do-rule-tips:before {position:absolute;left:5px;bottom:-8px;width:0;height:0;border:8px solid transparent;border-left:8px solid #f9ca05;content: " "}</style></yua>')
+head.insertAdjacentHTML("afterBegin", '<yua :skip class="yua-hide"><style id="yua-style">.yua-hide{ display: none!important } .do-rule-tips {position:absolute;z-index:65535;min-width:75px;height:30px;padding:7px 8px;line-height:16px;color:#333;background:#f9ca05;white-space:pre;} .do-rule-tips::before {position:absolute;left:5px;bottom:-8px;width:0;height:0;border:8px solid transparent;border-left:8px solid #f9ca05;content: " "}</style></yua>')
 var ifGroup = head.firstChild
 
 function log() {
@@ -5748,6 +5748,10 @@ new function () {// jshint ignore:line
                 return a
             }
         })
+        //补上协议, 避免引入依赖时判断不正确
+        if(/^\/\//.test(name)){
+            name = location.protocol + name
+        }
         var req = yua.mix({
             query: query,
             ext: ext,
@@ -5840,7 +5844,7 @@ new function () {// jshint ignore:line
                 if (url) {
                     if (!uniq[url]) {
                         deps.push(url)
-                        uniq[url] = "yua" //去重
+                        uniq[url] = !0//去重
                     }
                 }
             })

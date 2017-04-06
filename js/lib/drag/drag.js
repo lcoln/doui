@@ -35,8 +35,8 @@ define(['yua'], function(){
             // 拖拽结束,且释放鼠标
             binding.dragged = getBindingCallback(binding.element, 'data-dragged', binding.vmodels)
 
-            //获取是否允许溢出可视区
-            binding.overflow = !!binding.element.dataset.overflow
+            //默认允许溢出可视区
+            binding.overflow = true
 
             //方向,x轴, y轴, xy轴
             binding.axis = 'xy'
@@ -49,15 +49,11 @@ define(['yua'], function(){
             binding.limit = false
             if(!!binding.element.dataset.limit) {
                 binding.limit = binding.element.dataset.limit
+                //这里,只要不为空,除parent外,其他值都默认为window, 故"可溢出"为false
+                binding.overflow = false
                 delete binding.element.dataset.limit
             }
 
-            // 如果不限制,则允许溢出
-            if(binding.limit === false) {
-                binding.overflow = true
-            }
-
-            delete binding.element.dataset.overflow
             delete binding.element.dataset.beforedrag
             delete binding.element.dataset.dragging
             delete binding.element.dataset.dragged
@@ -68,7 +64,7 @@ define(['yua'], function(){
                 $drag = yua(this.element),
                 $doc = yua(document),
                 $target = null,
-                parent = null;
+                parentElem = null;
 
             // val值不为空时, 获取真正的拖动元素
             // 仅从父级上找
@@ -82,7 +78,7 @@ define(['yua'], function(){
             $target = yua(target);
             // 限制范围为parent时,获取父级元素
             if(this.limit === 'parent'){
-                parent = target.parentNode
+                parentElem = target.parentNode
             }
 
 
@@ -129,16 +125,16 @@ define(['yua'], function(){
                 var limit = [0, wh - th, 0, ww - tw]
 
                 if(_this.limit === 'parent') {
-                    var pgcs = getComputedStyle(parent),
+                    var pgcs = getComputedStyle(parentElem),
                         pcst = pgcs.transform.replace(/matrix\((.*)\)/, '$1'),
-                        poffset = yua(parent).offset();
+                        poffset = yua(parentElem).offset();
 
                     pcst = pcst !== 'none' ? pcst.split(', ') : [1,0,0,1,0,0]
 
                     var pox = poffset.left - pcst[4] - bsl,
                         poy = poffset.top - pcst[5] - bst;
 
-                    limit = [poy, poy + parent.clientHeight - th, pox, pox + parent.clientWidth - tw]
+                    limit = [poy, poy + parentElem.clientHeight - th, pox, pox + parentElem.clientWidth - tw]
                 }
 
                 var mvfn = $doc.bind('mousemove', function(ev){
