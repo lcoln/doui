@@ -217,7 +217,7 @@ define(['yua', 'lib/drag', 'css!./skin/def'], function(yua){
                         layerObj[conf].show = true
 
                         if(!yua.vmodels[conf]){
-                            yua.define(layerObj[conf].obj.init)
+                            yua(layerObj[conf].obj.init)
                         }
                         
                         yua.scan(layerDom[conf][1])
@@ -386,13 +386,13 @@ define(['yua', 'lib/drag', 'css!./skin/def'], function(yua){
                 document.body.appendChild(layerDom[this.init.$id][0])
                 //仅在允许点击遮罩时,初始化控制器,减少资源消耗
                 if(this.init.shadeClose){
-                    yua.define(this.cInit)
+                    yua(this.cInit)
                     yua.scan(layerDom[this.init.$id][0])
                 }
             }
 
             document.body.appendChild(layerDom[this.init.$id][1])
-            yua.define(this.init)
+            yua(this.init)
             yua.scan(layerDom[this.init.$id][1])
             return this
         },

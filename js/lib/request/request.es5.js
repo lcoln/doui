@@ -15,6 +15,7 @@ define(function(){
                 url: (url + '').trim(),
                 type: protocol || 'GET',
                 form: '',
+                data: {},
                 headers: {},
                 timeoutID: 0,
                 uuid: Math.random().toString(16).substr(2)

@@ -8,12 +8,6 @@
 (function(global, factory) {
 
     if (typeof module === "object" && typeof module.exports === "object") {
-        // For CommonJS and CommonJS-like environments where a proper `window`
-        // is present, execute the factory and get yua.
-        // For environments that do not have a `window` with a `document`
-        // (such as Node.js), expose a factory as module.exports.
-        // This accentuates the need for the creation of a real `window`.
-        // e.g. var yua = require("yua")(window);
         module.exports = global.document ? factory(global, true) : function(w) {
             if (!w.document) {
                 throw new Error("Yua只能运行在浏览器环境")
@@ -31,7 +25,7 @@
  *                    全局变量及方法                                   *
  **********************************************************************/
 
-var expose = Date.now()
+var expose = generateID()
 //http://stackoverflow.com/questions/7290086/javascript-use-strict-and-nicks-find-global-function
 var DOC = window.document
 var head = DOC.head //HEAD元素
@@ -39,10 +33,8 @@ head.insertAdjacentHTML("afterBegin", '<yua :skip class="yua-hide"><style id="yu
 var ifGroup = head.firstChild
 
 function log() {
-    if (yua.config.debug) {
 // http://stackoverflow.com/questions/8785624/how-to-safely-wrap-console-log
-        console.log.apply(console, arguments)
-    }
+    console.log.apply(console, arguments)
 }
 
 /**
@@ -64,7 +56,6 @@ var nullObject = {} //作用类似于noop，只用于代码防御，千万不要
 var rword = /[^, ]+/g //切割字符串为一个个小块，以空格或豆号分开它们，结合replace实现字符串的forEach
 var rw20g = /\w+/g
 var rsvg = /^\[object SVG\w*Element\]$/
-var rwindow = /^\[object (?:Window|DOMWindow|global)\]$/
 var oproto = Object.prototype
 var ohasOwn = oproto.hasOwnProperty
 var serialize = oproto.toString
@@ -101,9 +92,9 @@ function oneObject(array, val) {
     return result
 }
 
-var generateID = function (mark) {
+function generateID(mark) {
     mark = mark && (mark + '-') || 'yua-'
-    return mark + Math.floor(Date.now() / 1000).toString(16) + '-' + Math.random().toString(16).slice(2, 6) + '-' + Math.random().toString(16).slice(6, 10)
+    return mark + Date.now().toString(16) + '-' + Math.random().toString(16).slice(2, 6)
 }
 
 yua = function (el) { //创建jQuery式的无new 实例化结构
@@ -148,11 +139,6 @@ yua.nextTick = new function () {// jshint ignore:line
  *                 yua的静态方法定义区                              *
  **********************************************************************/
 
-yua.init = function (el) {
-    this[0] = this.element = el
-}
-yua.fn = yua.prototype = yua.init.prototype
-
 yua.type = function (obj) { //取得目标的类型
     if (obj == null) {
         return String(obj)
@@ -167,15 +153,33 @@ yua.isFunction = function (fn) {
     return serialize.call(fn) === "[object Function]"
 }
 
-yua.isWindow = function (obj) {
-    return rwindow.test(serialize.call(obj))
-}
 
 /*判定是否是一个朴素的javascript对象（Object），不是DOM对象，不是BOM对象，不是自定义类的实例*/
 yua.isPlainObject = function (obj) {
     // 简单的 typeof obj === "object"检测，会致使用isPlainObject(window)在opera下通不过
     return serialize.call(obj) === "[object Object]" && Object.getPrototypeOf(obj) === oproto
 }
+
+
+var VMODELS = yua.vmodels = {} //所有vmodel都储存在这里
+yua.init = function (source) {
+    if(yua.isPlainObject(source)){
+
+        var $id = source.$id,vm;
+        if (!$id) {
+            log("warning: vm必须指定$id")
+        }
+        vm = modelFactory(source)
+        vm.$id = $id
+        return VMODELS[$id] = vm
+
+    }else{
+        this[0] = this.element = source
+    }
+}
+yua.fn = yua.prototype = yua.init.prototype
+
+
 
 //与jQuery.extend方法，可用于浅拷贝，深拷贝
 yua.mix = yua.fn.mix = function () {
@@ -492,7 +496,6 @@ yua.mix({
     rword: rword,
     subscribers: subscribers,
     version: '1.0.0',
-    ui: {},
     log: log,
     slice: function (nodes, start, end) {
         return aslice.call(nodes, start, end)
@@ -502,8 +505,6 @@ yua.mix({
     error: function (str, e) {
         throw new (e || Error)(str)// jshint ignore:line
     },
-    /*将一个以空格或逗号隔开的字符串或数组,转换成一个键值都为1的对象*/
-    oneObject: oneObject,
     /* yua.range(10)
      => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
      yua.range(1, 11)
@@ -521,8 +522,8 @@ yua.mix({
             start = 0
         }
         var index = -1,
-                length = Math.max(0, Math.ceil((end - start) / step)),
-                result = new Array(length)
+            length = Math.max(0, Math.ceil((end - start) / step)),
+            result = new Array(length)
         while (++index < length) {
             result[index] = start
             start += step
@@ -1079,7 +1080,6 @@ kernel.plugins = plugins
 kernel.plugins['interpolate'](["{{", "}}"])
 
 kernel.async = true
-kernel.debug = true
 kernel.paths = {}
 kernel.shim = {}
 kernel.maxRepeatSize = 100
@@ -1249,17 +1249,13 @@ function notifySubscribers(subs, args) {
 
 
 
-//yua最核心的方法的两个方法之一（另一个是yua.scan），返回一个ViewModel(VM)
-var VMODELS = yua.vmodels = {} //所有vmodel都储存在这里
-yua.define = function (source) {
-    var $id = source.$id
-    if (!$id) {
-        log("warning: vm必须指定$id")
-    }
-    var vmodel = modelFactory(source)
-    vmodel.$id = $id
-    return VMODELS[$id] = vmodel
-}
+
+
+
+
+
+
+
 
 //一些不需要被监听的属性
 var $$skipArray = oneObject("$id,$watch,$fire,$events,$model,$skipArray,$active,$pathname,$up,$ups,$track,$accessors")
@@ -1628,8 +1624,13 @@ var $modelDescriptor = {
 
 
 
+
+
+
+
+
 /*********************************************************************
- *          监控数组（与:each, :repeat配合使用）                     *
+ *          监控数组（:repeat配合使用）                     *
  **********************************************************************/
 
 var arrayMethods = ['push', 'pop', 'shift', 'unshift', 'splice']
@@ -1941,6 +1942,23 @@ function getProxyIds(a, isArray) {
     return ret.join(";")
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*********************************************************************
  *                     定时GC回收机制 (基于1.6基于频率的GC)                *
  **********************************************************************/
@@ -2122,6 +2140,12 @@ yua.clearHTML = function(node) {
     }
     return node
 }
+
+
+
+
+
+
 
 /*********************************************************************
  *                        yua的原型方法定义区                       *
@@ -3062,8 +3086,12 @@ function scanAttr(elem, vmodels, match) {
 var rnoscanAttrBinding = /^if|widget|repeat$/
 var rnoscanNodeBinding = /^html|include$/
 
-function scanNodeList(parent, vmodels) {
-    var nodes = yua.slice(parent.childNodes)
+function scanNodeList(elem, vmodels) {
+    if(isWidget(elem)){
+        // elem = elem.content
+        log(elem)
+    }
+    var nodes = yua.slice(elem.childNodes)
     scanNodeArray(nodes, vmodels)
 }
 
@@ -3078,21 +3106,18 @@ function scanNodeArray(nodes, vmodels) {
             case 1:
                 var elem = node
                 if (!elem.msResolved && elem.parentNode && elem.parentNode.nodeType === 1) {
-                    var library = isWidget(elem)
-                    if (library) {
-                        var widget = elem.localName ? elem.localName.replace(library + ":", "") : elem.nodeName
-                        var fullName = library + ":" + camelize(widget)
+                    var widget = isWidget(elem)
+
+                    if (widget) {
                         componentQueue.push({
-                            library: library,
                             element: elem,
-                            fullName: fullName,
-                            widget: widget,
                             vmodels: vmodels,
-                            name: "widget"
+                            name: widget
                         })
-                        if (yua.components[fullName]) {
+                        if (yua.components[widget]) {
+                            // log(widget, yua.components)
                             //确保所有:attr-name扫描完再处理
-                            _delay_component(fullName)
+                            _delay_component(widget)
                         }
                     }
                 }
@@ -3263,6 +3288,19 @@ Buffer.prototype = {
 
 var buffer = new Buffer()
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 var componentQueue = []
 var widgetList = []
 var componentHooks = {
@@ -3274,12 +3312,11 @@ var componentHooks = {
     $dispose: noop,
     $container: null,
     $childReady: noop,
-    $replace: false,
-    $extend: null,
     $$template: function (str) {
         return str
     }
 }
+
 
 yua.components = {}
 yua.component = function (name, opts) {
@@ -3287,21 +3324,19 @@ yua.component = function (name, opts) {
         yua.components[name] = yua.mix({}, componentHooks, opts)
     }
     for (var i = 0, obj; obj = componentQueue[i]; i++) {
-        if (name === obj.fullName) {
-            componentQueue.splice(i, 1)
+        if (name === obj.name) {
+            componentQueue.splice(i, 1);
             i--;
 
             (function (host, hooks, elem, widget) {
                 //如果elem已从Document里移除,直接返回
-                //issuse : https://github.com/RubyLouvre/yua2/issues/40
                 if (!yua.contains(DOC, elem) || elem.msResolved) {
                     yua.Array.remove(componentQueue, host)
                     return
                 }
   
                 var dependencies = 1
-                var library = host.library
-                var global = yua.libraries[library] || componentHooks
+                var global = componentHooks
 
                 //===========收集各种配置=======
                 if (elem.getAttribute(":attr-identifier")) {
@@ -3309,24 +3344,20 @@ yua.component = function (name, opts) {
                     return
                 }
                 var elemOpts = getOptionsFromTag(elem, host.vmodels)
-                var vmOpts = getOptionsFromVM(host.vmodels, elemOpts.config || host.fullName)
+                var vmOpts = getOptionsFromVM(host.vmodels, elemOpts.config || host.name)
                 var $id = elemOpts.$id || elemOpts.identifier || generateID(widget)
                 delete elemOpts.config
                 delete elemOpts.$id
                 delete elemOpts.identifier
                 var componentDefinition = {}
 
-                var parentHooks = yua.components[hooks.$extend]
-                if (parentHooks) {
-                    yua.mix(true, componentDefinition, parentHooks)
-                    componentDefinition = parentHooks.$construct.call(elem, componentDefinition, {}, {})
-                } else {
-                    yua.mix(true, componentDefinition, hooks)
-                }
+                yua.mix(true, componentDefinition, hooks)
+                
                 componentDefinition = yua.components[name].$construct.call(elem, componentDefinition, vmOpts, elemOpts)
 
                 componentDefinition.$refs = {}
                 componentDefinition.$id = $id
+
 
                 //==========构建VM=========
                 var keepSlot = componentDefinition.$slot
@@ -3338,62 +3369,39 @@ yua.component = function (name, opts) {
                 delete componentDefinition.$container
                 delete componentDefinition.$construct
 
-                var vmodel = yua.define(componentDefinition) || {}
+                var vmodel = yua(componentDefinition) || {}
+                vmodel.$ups = host.vmodels
+                vmodel.$up = host.vmodels[0]
                 elem.msResolved = 1 //防止二进扫描此元素
                 vmodel.$init(vmodel, elem)
                 global.$init(vmodel, elem)
                 var nodes = elem.childNodes
-                //收集插入点
-                var slots = {}, snode
-                for (var s = 0, el; el = nodes[s++]; ) {
-                    var type = el.nodeType === 1 && el.getAttribute("slot") || keepSlot
-                    if (type) {
-                        if (slots[type]) {
-                            slots[type].push(el)
-                        } else {
-                            slots[type] = [el]
-                        }
-                    }
-                }
 
                 if (vmodel.$$template) {
                     yua.clearHTML(elem)
                     elem.innerHTML = vmodel.$$template(keepTemplate)
                 }
-                for (s in slots) {
-                    if (vmodel.hasOwnProperty(s)) {
-                        var ss = slots[s]
-                        if (ss.length) {
-                            var fragment = yuaFragment.cloneNode(true)
-                            for (var ns = 0; snode = ss[ns++]; ) {
-                                fragment.appendChild(snode)
-                            }
-                            vmodel[s] = fragment
-                        }
-                        slots[s] = null
-                    }
+
+                // 组件所使用的标签是temlate,所以必须要要用子元素替换掉
+                var child = elem.content.firstChild
+                elem.parentNode.replaceChild(child, elem)
+                child.msResolved = 1
+                var cssText = elem.style.cssText
+                var className = elem.className
+                elem = host.element = child
+                elem.style.cssText += ";"+ cssText
+                if (className) {
+                    yua(elem).addClass(className)
                 }
-                slots = null
-                var child = elem.children[0] || elem.firstChild
-                if (keepReplace) {
-                    elem.parentNode.replaceChild(child, elem)
-                    child.msResolved = 1
-                    var cssText = elem.style.cssText
-                    var className = elem.className
-                    elem = host.element = child
-                    elem.style.cssText += ";"+ cssText
-                    if (className) {
-                        yua(elem).addClass(className)
-                    }
-                }
+                //指定了组件的容器的话,则把组件节点转过去
                 if (keepContainer) {
                     keepContainer.appendChild(elem)
                 }
                 yua.fireDom(elem, "datasetchanged",
-                        {library: library, vm: vmodel, childReady: 1})
+                        {vm: vmodel, childReady: 1})
                 var children = 0
                 var removeFn = yua.bind(elem, "datasetchanged", function (e) {
-                    if (e.childReady && e.library === library) {
+                    if (e.childReady) {
                         dependencies += e.childReady
                         if (vmodel !== e.vm) {
                             vmodel.$refs[e.vm.$id] = e.vm
@@ -3433,15 +3441,15 @@ yua.component = function (name, opts) {
                 scanTag(elem, [vmodel].concat(host.vmodels))
                 yua.vmodels[vmodel.$id] = vmodel
                 if (!elem.childNodes.length) {
-                    yua.fireDom(elem, "datasetchanged", {library: library, vm: vmodel, childReady: -1})
+                    yua.fireDom(elem, "datasetchanged", {vm: vmodel, childReady: -1})
                 } else {
                     var id2 = setTimeout(function () {
                         clearTimeout(id2)
-                        yua.fireDom(elem, "datasetchanged", {library: library, vm: vmodel, childReady: -1})
+                        yua.fireDom(elem, "datasetchanged", {vm: vmodel, childReady: -1})
                     }, 17)
                 }
 
-            })(obj, yua.components[name], obj.element, obj.widget)// jshint ignore:line
+            })(obj, yua.components[name], obj.element, obj.name)// jshint ignore:line
 
         }
     }
@@ -3461,20 +3469,14 @@ function getOptionsFromVM(vmodels, pre) {
     return {}
 }
 
-yua.libraries = []
-yua.library = function (name, opts) {
-    if (DOC.namespaces) {
-        DOC.namespaces.add(name, 'http://www.w3.org/1999/xhtml');
+function isWidget(el) {//如果是组件,则返回组件的名字
+    var name = el.nodeName.toLowerCase()
+    if(name === 'template' && el.getAttribute('name')){
+        return el.getAttribute('name')
     }
-    yua.libraries[name] = yua.mix({
-        $init: noop,
-        $ready: noop,
-        $dispose: noop
-    }, opts || {})
+    return null
 }
 
-yua.library("ms")
-yua.library("do")
 
 
 
@@ -3486,26 +3488,13 @@ yua.library("do")
 
 
 
-/*
- broswer  nodeName  scopeName  localName
- IE9     ONI:BUTTON oni        button
- IE10    ONI:BUTTON undefined  oni:button
- IE8     button     oni        undefined
- chrome  ONI:BUTTON undefined  oni:button
- 
- */
-function isWidget(el) { //如果为自定义标签,返回UI库的名字
-    if (el.scopeName && el.scopeName !== "HTML") {
-        return el.scopeName
-    }
-    var fullName = el.nodeName.toLowerCase()
-    var index = fullName.indexOf(":")
-    if (index > 0) {
-        return fullName.slice(0, index)
-    }
-}
-//各种MVVM框架在大型表格下的性能测试
-// https://github.com/RubyLouvre/yua/issues/859
+
+
+
+
+
+
+
 
 var bools = ["autofocus,autoplay,async,allowTransparency,checked,controls",
     "declare,disabled,defer,defaultChecked,defaultSelected",
@@ -5728,7 +5717,7 @@ new function () {// jshint ignore:line
             return ""
         })
         if (res === "ready") {
-            log("debug: ready!已经被废弃，请使用domReady!")
+            log("ready!已经被废弃，请使用domReady!")
             res = "domReady"
         }
         //2. 去掉querystring, hash
@@ -6017,7 +6006,7 @@ new function () {// jshint ignore:line
                 head.removeChild(node)
                 node = null // 处理旧式IE下的循环引用问题
             })
-            log("debug: 加载 " + id + " 失败" + onError + " " + (!modules[id].state))
+            log("加载 " + id + " 失败")
         } else {
             return true
         }
@@ -6090,13 +6079,12 @@ new function () {// jshint ignore:line
         css: {
             load: function (name, req, onLoad) {
                 var url = req.url
-                head.insertAdjacentHTML("beforeend", '<link rel="stylesheet" href="' + url + '">')
+                head.insertAdjacentHTML("afterBegin", '<link rel="stylesheet" href="' + url + '">')
                 onLoad()
             }
         },
         text: {
             load: function (name, req, onLoad) {
-                var url = req.url
                 var xhr = getXHR()
                 xhr.onload = function () {
                     var status = xhr.status;
@@ -6106,13 +6094,7 @@ new function () {// jshint ignore:line
                         onLoad(xhr.responseText)
                     }
                 }
-                var time = "_=" + (new Date() - 0)
-                var _url = url.indexOf("?") === -1 ? url + "?" + time : url + "&" + time
-                xhr.open("GET", _url, true)
-                if ("withCredentials" in xhr) {//这是处理跨域
-                    xhr.withCredentials = true
-                }
-                xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest")//告诉后端这是AJAX请求
+                xhr.open("GET", req.url, true)
                 xhr.send()
             }
         }

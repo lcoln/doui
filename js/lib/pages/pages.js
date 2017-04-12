@@ -1,127 +1,111 @@
-define(["avalon","text!./pages.tpl","css!./pages.css"], function (av, tpl) {
+"use strict";
+define(["yua","text!./pages.htm", "css!./pages"], function(yua, tpl) {
 
-    var widget = av.ui.pages = function(ele, data, vms){
+    //计算页码列表
+    function calculate(vm){
+        if (vm.total < 2)
+            return vm.pageList.clear();
 
-        var opts = av.mix({}, data.pagesOptions);
-        var height = opts.height || '',
-            skin = opts.skin || 'default';
+        var arr = [],
+            mid = vm.curr < vm.max / 2 ? vm.max - vm.curr : Math.floor(vm.max / 2);
 
-        delete opts.skin;
-        delete opts.height;
-        opts.pages = []; //无论是否定义，都会清掉，有点暴力
-
-        opts.$id = data.pagesId;
-        opts.$init = function(scan){
-            ele.classList.add('widget-pages', 'skin-' + skin, 'do-fn-noselect');
-            height && ele.classList.add(height);//非空时才添加,避免报错
-            ele.innerHTML = tpl;
-            calPages(Pager);
-            scan()
-        };
-        opts.$remove = function() {
-            ele.innerHTML =  ''
-        };
-        opts.setUrl = function(id){
-            if(!Pager.url || id === '...' || Pager.curr === id || id > Pager.total || id < 1)
-                return 'javascript:;'
-            return Pager.url.replace('{id}', id)
-        };
-        opts.onJump = function(event, id){
-            event.preventDefault()
-            id = id >> 0;
-            jump(id, Pager);
-        };
-        opts.jumpPage = function(event){
-            var pid = Pager.jumpTxt;     
-            if(pid > Pager.total)
-                Pager.jumpTxt = Pager.total;
-
-            if(event.keyCode == 13)
-                return jump(pid, Pager);
+        if(vm.curr - mid > 1){
+            arr.push('...')
         }
-
-        var Pager = av.define(opts);
-
-
-        Pager.$watch('total', function(v, old){
-            Pager.total = v >> 0 || 1; //自动转换成数字类型，防止传入的值为字符串时报错，如 '3'
-            old = old >> 0;
-            (v !== old) && calPages(Pager);
-        })
-
-        Pager.$watch('curr', function(v, old){
-            v = v >> 0 || 1;//自动转换成数字类型
-            old = old >> 0;
-            Pager.curr = v;
-            (v !== old) && calPages(Pager);
-        })
-        
-        return Pager;
+        for (var i = vm.curr - mid; i < vm.curr + mid + 1 && i <= vm.total; i++){
+            if(i > 0){
+                arr.push(i)
+            }
+        }
+        if(vm.curr + mid < vm.total){
+            arr.push('...')
+        }
+        vm.pageList = arr
     }
 
-    /**
-     * [calPages 计算要显示的页码数组，并赋值给pages]
-     * @param  {[type]} Pager [分页vm对象]
-     */
-    function calPages(Pager){
-        if(Pager.total < 2){
-            Pager.pages.clear();
-            return;
+    function update(pid, vm) {
+        if(pid < 1){
+            pid = vm.input = 1
         }
-
-        var pageArr = [], len = (Pager.curr < Pager.max / 2) ? Pager.max : Math.floor(Pager.max / 2);
-
-        if(Pager.curr - len > 1)
-            pageArr.push('...');
-
-        for(var i = Pager.curr - len; i < Pager.curr + len && i <= Pager.total; i++){
-            if(i > 0)
-                pageArr.push(i)
+        if(pid > vm.total){
+            pid = vm.input = vm.total
         }
-        if(Pager.curr + len < Pager.total)
-            pageArr.push('...');
-
-        Pager.pages = pageArr;
+        if(pid !== vm.curr){
+            vm.curr = vm.input = pid
+            vm.$onJump(pid)
+        }
     }
 
-    /**
-     * [jump 内部跳转函数]
-     * @param  {[type]} id    [要跳转去的页码]
-     * @param  {[type]} Pager [分页vm对象]
-     */
-    function jump(id, Pager){
-        if(id < 1)
-            id = Pager.jumpTxt = 1;
-        if(id > Pager.total)
-            id = Pager.jumpTxt = Pager.total;
-        if(Pager.curr === id)
-            return;
+    return yua.component('pages', {
+        $template: tpl,
+        $init: function(vm) {
 
-        Pager.curr = Pager.jumpTxt = id;
-        Pager.callback && Pager.callback(id);
+            calculate(vm)
 
-        calPages(Pager);
-    }
+            vm.$setUrl = function(val) {
+                if(!vm.url
+                    || '...' === val
+                    || vm.curr === val
+                    || val > vm.total
+                    || 1 > val) {
 
-    //默认参数
-    widget.defaults = {
-        curr: 1, //当前页
-        total: 1, // 总页数默认为1，即页面上不会显示分页条
-        max: 5, // 最多显示页码数
-        url: 'javascript:;', //页码按钮上的url,如'#!/page-{id}.html',其中{id}会被替换成该页码
-        pageJump: !1, //是否显示跳转表单
-        simpleMode: !1, //简单模式，即只有上一页和下一页
-        jumpTxt: 1, //跳转输入框显示的页码
-        pages: [], //页码数组
-        btns: { //除页码本身外的按钮上的字符
-            prev: '<<',
-            next: '>>',
-            home: '首页',
-            end: '末页'
+                    return 'javascript:;'
+                }else{
+                    return vm.url.replace('{id}', val)
+                }
+            }
+
+            vm.$jump = function(ev, val) {
+                if ('...' !== val) {
+                    var link = this.getAttribute('href') || this.getAttribute('xlink:href')
+
+                    if (val !== void 0){
+                        if('javascript:;' !== link){
+                            location.hash = link
+                        }
+                        var pid = val >> 0;
+                        update(pid, vm)
+                    } else {
+                        vm.input = vm.input >>> 0 || 1;
+                        if(13 == ev.keyCode){
+                            update(vm.input, vm)
+                        }
+                    }
+                }
+            }
+            vm.$watch('curr', function(val, old) {
+                val = (val >>> 0) || 1
+                old = old >>> 0
+                if(val !== old){
+                    calculate(vm)
+                }
+            })
+
+            vm.$watch('total', function(val, old) {
+                val = (val >>> 0) || 1
+                old = old >>> 0
+                if(val !== old){
+                    calculate(vm)
+                }
+            })
         },
-        callback: null //点击页码/上/下/首/末页的回调，页码无效或者为当前页的时候不会触发
-    }
-
-
-    return av;
-})
+        curr: 1,
+        total: 1,
+        max: 5,
+        url: "javascript:;",
+        inputJump: !1,
+        simpleMode: !1,
+        input: 1,
+        pageList: [],
+        btns: {
+            prev: "<<",
+            next: ">>",
+            home: "首页",
+            end: "末页"
+        },
+        $skipArray: ['max', 'btns', 'url'],
+        $setUrl: yua.noop,
+        $jump: yua.noop,
+        $onJump: yua.noop
+    })
+});

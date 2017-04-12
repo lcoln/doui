@@ -1,0 +1,33 @@
+<div class="do-pages do-fn-noselect" :class="{{'skin-' + skin}}">
+    <a class="normal"
+        :if="curr > 1 && !simpleMode"
+        :attr="{href: $setUrl(1)}"
+        :text="btns.home"
+        :click="$jump($event, 1)"></a>
+    <a class="normal"
+        :if="curr > 1"
+        :attr="{href: $setUrl(curr - 1)}"
+        :text="btns.prev"
+        :click="$jump($event, curr - 1)"></a>
+    <a :if-loop="!simpleMode || curr === el"
+        :repeat="pageList"
+        :attr="{href: $setUrl(el)}"
+        :class="{normal: curr !== el && '...' !== el, disabled: '...' === el, curr: curr === el}"
+        :text="el"
+        :click="$jump($event, el)"></a>
+    <a class="normal"
+        :if="curr < total"
+        :attr="{href: $setUrl(curr + 1)}"
+        :click="$jump($event, curr + 1)">{{btns.next}}</a>
+    <a class="normal"
+        :if="curr < total && !simpleMode"
+        :attr="{href: $setUrl(total)}"
+        :click="$jump($event, total)">{{btns.end}}</a>
+
+    <div class="input-box" :if="inputJump && !simpleMode">
+        <span>共{{total}}页，跳转到第</span>
+        <input type="text" :duplex-number="input" :keyup="$jump($event)">
+        <span>页</span>
+        <a class="normal" :attr="{href: $setUrl(input)}" :click="$jump($event, input)">确定</a>
+    </div>
+</div>
