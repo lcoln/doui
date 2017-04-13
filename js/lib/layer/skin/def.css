@@ -78,7 +78,7 @@
 .do-layer-cover.type-6 {background:rgba(0,0,0,.3);}
 
 /*special模式类型,调小宽高限制,内外边距取消*/
-.do-layer.type-unspecial {min-width:100px;background:transparent;}
+.do-layer.type-unspecial {min-width:10px;background:transparent;}
 .do-layer.type-unspecial .layer-content {min-height:60px;padding:0}
 .do-layer.type-unspecial .layer-content .detail {margin:0;padding:0}
 

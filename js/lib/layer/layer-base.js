@@ -55,7 +55,8 @@ define(['yua', 'lib/drag', 'css!./skin/def'], function(yua){
                     return
                 }
                 layerObj[id].parentElem.replaceChild(layerObj[id].wrap, layerDom[id][1])
-                unique = null
+                layerObj[id].show = false
+
             }catch(err){}
         }else{
             try {
@@ -96,7 +97,7 @@ define(['yua', 'lib/drag', 'css!./skin/def'], function(yua){
         __layer = {
             alert: function(msg, conf){
                 if(typeof conf === 'function'){
-                    conf = {yes: conf}
+                    conf = {yes: conf, no: conf}
                 }else if(typeof conf === 'object'){
                     conf = conf
                 }else{
@@ -212,7 +213,7 @@ define(['yua', 'lib/drag', 'css!./skin/def'], function(yua){
                     }else{
                         //只能显示一个实例
                         if(layerObj[conf].show){
-                            return
+                            return conf
                         }
                         layerObj[conf].show = true
 
@@ -225,12 +226,13 @@ define(['yua', 'lib/drag', 'css!./skin/def'], function(yua){
 
                         layerObj[conf].parentElem.appendChild(layerDom[conf][1])
                         layerObj[conf].parentElem.replaceChild(layerDom[conf][1], layerObj[conf].wrap)
+                        return conf
                     }
                 }else{
                     return new __constructor(conf).init.$id
                 }
             },
-            version: '0.0.1-base'
+            version: '0.0.2-base'
         };
 
     /*type: { // 弹窗类型对应的id值
@@ -486,7 +488,11 @@ define(['yua', 'lib/drag', 'css!./skin/def'], function(yua){
     yua.directive('layer', {
         priority: 1400,
         init: function(binding){
-            if(!binding.param){
+            if(!binding.param || binding.param !== 'tips'){
+                
+                binding.param = '' //去掉param,保证之后的逻辑处理正常
+                // 去掉:layer属性,避免二次扫描
+                binding.element.removeAttribute(binding.name)
                 binding.element.style.display = 'none'
             }
         },
@@ -498,6 +504,16 @@ define(['yua', 'lib/drag', 'css!./skin/def'], function(yua){
             var _this = this,
                 init = Object.assign({}, this.element.dataset);
 
+            if(init.hasOwnProperty('area')){
+                init.area = init.area.split(',')
+            }
+            if(init.hasOwnProperty('offset')){
+                init.offset = init.offset.split(',')
+            }
+            if(init.hasOwnProperty('btns')){
+                init.btns = init.btns.split(',')
+            }
+            
             if(!this.param){
                 init.type = 7;
                 init.$id = '$wrap-' + val;
@@ -505,9 +521,12 @@ define(['yua', 'lib/drag', 'css!./skin/def'], function(yua){
                     init.menubar = false;
                 }
 
-                var tmp = new __constructor().ready(init);
-
-                tmp.init.content = this.element.cloneNode(true);
+                var tmp = new __constructor().ready(init),
+                    elem = this.element.cloneNode(true);
+                
+                // 去掉隐藏之后,再放入content中
+                elem.style.display = ''
+                tmp.init.content = elem.outerHTML;
 
                 layerObj[tmp.init.$id] = {obj: tmp, parentElem: this.element.parentNode, wrap: this.element, show: false};
                 layerDom[tmp.init.$id] = tmp.create();
