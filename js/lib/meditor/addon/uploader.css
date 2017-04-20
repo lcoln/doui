@@ -1,0 +1,15 @@
+@charset "UTF-8";
+/**
+ * 
+ * @authors yutent (yutent@doui.cc)
+ * @date    2017-04-20 19:13:24
+ * 
+ */
+
+.do-meditor-uploader {width:780px;height:auto;padding:15px 20px;background:#fafafa;}
+.do-meditor-uploader section {display:block;width:100%;height:auto;margin:10px 0;line-height:35px;}
+.do-meditor-uploader section::after {visibility: hidden;overflow:hidden; display: block;height: 0;content: "."; clear: both;}
+.do-meditor-uploader section .label {float: left;width:80px;}
+.do-meditor-uploader section select {float:left;width:200px;height:35px;border:1px solid #ddd;border-radius:5px;background:#fff}
+.do-meditor-uploader section textarea {width:100%;height:300px;padding:5px 10px;border:1px solid #ddd;background:#fff;resize:none;}
+.do-meditor-uploader section .submit {float:right;width:80px;height:35px;background:#ddd;color:#666;text-align:center;}
