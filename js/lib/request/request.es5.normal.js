@@ -6,7 +6,7 @@
  */
 
 "use strict";
-define(['yua'], function(yua){
+define(function(){
     var _request = function(url, protocol){
             this.transport = true
             protocol = (protocol + '').trim().toUpperCase()
@@ -53,7 +53,37 @@ define(['yua'], function(yua){
 
     // ------------------- 几个解释方法 -----------------------
 
-    
+    var Format = function(){
+            this.tagHooks = new function(){
+                this.option = doc.createElement('select')
+                this.thead = doc.createElement('table')
+                this.td = doc.createElement('tr')
+                this.area = doc.createElement('map')
+                this.tr = doc.createElement('tbody')
+                this.col = doc.createElement('colgroup')
+                this.legend = doc.createElement('fieldset')
+                this._default = doc.createElement('div')
+                this.g = doc.createElementNS('http://www.w3.org/2000/svg', 'svg')
+
+                this.optgroup = this.option
+                this.tbody = this.tfoot = this.colgroup = this.caption = this.thead
+                this.th = this.td
+            };
+            var _this = this
+            'circle,defs,ellipse,image,line,path,polygon,polyline,rect,symbol,text,use'.replace(/,/g, function(m){
+                _this.tagHooks[m] = _this.tagHooks.g //处理svg
+            })
+
+            this.rtagName = /<([\w:]+)/
+            this.rxhtml = /<(?!area|br|col|embed|hr|img|input|link|meta|param)(([\w:]+)[^>]*)\/>/ig
+            this.scriptTypes = {
+                    'text/javascript': 1,
+                    'text/ecmascript': 1,
+                    'application/ecmascript': 1,
+                    'application/javascript': 1
+                }
+            this.rhtml = /<|&#?\w+;/
+        }
 
     function serialize(p, obj, q){
         var k
@@ -78,8 +108,6 @@ define(['yua'], function(yua){
         }
         
     }
-
-    var Format = function(){}
 
     Format.prototype = {
         parseJS: function(code){
@@ -113,7 +141,42 @@ define(['yua'], function(yua){
             return xml
         },
         parseHTML: function (html){
-            return yua.parseHTML(html)
+            var fragment = (doc.createDocumentFragment()).cloneNode(false)
+
+            if(typeof html !== 'string')
+                return fragment
+
+            if(!this.rhtml.test(html)){
+                fragment.appendChild(document.createTextNode(html))
+                return fragment
+            }
+
+            html = html.replace(this.rxhtml, '<$1></$2>').trim()
+            var tag = (this.rtagName.exec(html) || ['', ''])[1].toLowerCase()
+            var wrap = this.tagHooks[tag] || this.tagHooks._default
+            var firstChild = null
+
+            //使用innerHTML生成的script节点不会触发请求与执行text属性
+            wrap.innerHTML = html
+            var script = wrap.getElementsByTagName('script')
+            if(script.length){
+                for(var i = 0, el; el = script[i++];){
+                    if(this.scriptTypes[el.type]){
+                        var tmp = (doc.createElement("script")).cloneNode(false)
+                        el.attributes.forEach(function(attr){
+                            tmp.setAttribute(attr.name, attr.value)
+                        })
+                        tmp.text = el.text
+                        el.parentNode.replaceChild(tmp, el)
+                    }
+                }
+            }
+
+            while(firstChild = wrap.firstChild){
+                fragment.appendChild(firstChild)
+            }
+
+            return fragment
         },
         param: function(obj){
             if(!obj || typeof obj === 'string' || typeof obj === 'number')
@@ -668,9 +731,9 @@ define(['yua'], function(yua){
             },
             cache: {},
             cid: 0,
-            version: '0.0.1-es5',
+            version: '1.0.0',
+            release: 'request ES5 version/1.0.0'
         }
-        yua.ui.request = '0.0.1-es5'
     }
 
     return request

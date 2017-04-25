@@ -1,4 +1,4 @@
-define(["./codemirror", 'css!./codemirror'], function(CodeMirror) {
+define(["./codemirror", 'css!./theme-dark'], function(CodeMirror) {
     CodeMirror.defineMode("htmlmixed", function(config) {
         var htmlMode = CodeMirror.getMode(config, {
             name: "xml",

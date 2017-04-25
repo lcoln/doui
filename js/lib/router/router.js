@@ -159,5 +159,7 @@ define(['yua'], function(){
         return false
     }
 
+    yua.ui.router = '0.0.1'
+
     return yua.router = new Router;
 })

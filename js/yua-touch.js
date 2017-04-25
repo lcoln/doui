@@ -353,7 +353,7 @@ if(!String.prototype.splice){
     Object.defineProperty(String.prototype,
         'splice',
         {
-            value: function(start, len, sub){
+            value: function(start, len, fill){
                 var length = this.length,
                     argLen = arguments.length;
 
@@ -497,6 +497,7 @@ yua.mix({
     subscribers: subscribers,
     version: '1.0.0',
     log: log,
+    ui: {}, //仅用于存放组件版本信息等
     slice: function (nodes, start, end) {
         return aslice.call(nodes, start, end)
     },
@@ -3349,7 +3350,7 @@ yua.component = function (name, opts) {
                 delete elemOpts.config
                 delete elemOpts.$id
                 delete elemOpts.identifier
-                var componentDefinition = {}
+                var componentDefinition = {$up: host.vmodels[0], $ups: host.vmodels}
 
                 yua.mix(true, componentDefinition, hooks)
                 
@@ -3384,6 +3385,14 @@ yua.component = function (name, opts) {
 
                 // 组件所使用的标签是temlate,所以必须要要用子元素替换掉
                 var child = elem.content.firstChild
+                if(!child || serialize.call(child) === '[object Text]'){
+                    var tmpDom = document.createElement('div')
+                    if(child){
+                        tmpDom.appendChild(child)
+                    }
+                    child = tmpDom
+                    tmpDom = null
+                }
                 elem.parentNode.replaceChild(child, elem)
                 child.msResolved = 1
                 var cssText = elem.style.cssText

@@ -1,6 +1,7 @@
 "use strict";
-define(["yua","text!./pages.htm", "css!./pages"], function(yua, tpl) {
+define(["yua","text!./main.htm", "css!./main"], function(yua, tpl) {
 
+    yua.ui.pages = '0.0.1'
     //计算页码列表
     function calculate(vm){
         if (vm.total < 2)

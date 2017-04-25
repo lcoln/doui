@@ -6,16 +6,16 @@
  * 
  */
 
-.do-fn-cl { *zoom: 1; }
-.do-fn-cl:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; overflow:hidden;} 
-.do-layer, .do-layer * {margin: 0;padding: 0;vertical-align: baseline;box-sizing:border-box;}
+
+.do-layer, .do-layer * {vertical-align: baseline;box-sizing:border-box;}
 .do-layer a {text-decoration:none;}
 
-@font-face {font-family: "deficon";
+@font-face {font-family: "def-font";
   src: url('def.eot'); /* IE9*/
   src: url('def.ttf') format('truetype'); /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
 }
 
+.do-layer-cl::after {visibility:hidden;overflow:hidden;display:block;height: 0;content: ".";clear: both;} 
 .do-layer-cover {position:fixed;left:0;top:0;z-index:65534;width:100%;height:100%;background:rgba(255,255,255,.05);}
 .do-layer {position:fixed;left:50%;top:50%;z-index:65535;width:auto;height:auto;}
 .do-layer:active {z-index:65536;}
@@ -23,7 +23,7 @@
 
 /*默认皮肤样式*/
 .do-layer.skin-def {color:#666;font-size:14px;box-shadow:0 0 10px rgba(0,0,0,.3);}
-.do-layer.skin-def .deficon {display: inline-block;font-family:"deficon" !important;font-style:normal;-webkit-font-smoothing: antialiased;-webkit-text-stroke-width: 0.2px;-moz-osx-font-smoothing: grayscale;}
+.do-layer.skin-def .def-font {display: inline-block;font-family:"def-font" !important;font-style:normal;-webkit-font-smoothing: antialiased;-webkit-text-stroke-width: 0.2px;-moz-osx-font-smoothing: grayscale;}
 .do-layer.skin-def .icon-1:before {content:"\e6f1";color:#11b330;}/*discover*/
 .do-layer.skin-def .icon-2:before {content:"\e6fa";color:#f30;}/*position*/
 .do-layer.skin-def .icon-3:before {content:"\e6f0";color:#f30;}/*del*/
@@ -53,7 +53,7 @@
 .do-layer.skin-def .action-close:before {content:"\e659";}
 
 .do-layer.skin-def .layer-content {position:relative;width:100%;height:auto;min-height:50px;padding:10px;}
-.do-layer.skin-def .layer-content .deficon {position:absolute;left:10px;top:10px;width:50px;height:auto;line-height:40px;font-size:40px;text-align:center;}
+.do-layer.skin-def .layer-content .msg-icon {position:absolute;left:10px;top:10px;width:50px;height:auto;line-height:40px;font-size:40px;text-align:center;}
 .do-layer.skin-def .layer-content .detail {width:auto;height:100%;margin:auto auto auto 60px;padding:5px 15px;word-break:break-all;word-wrap: break-word;}
 .do-layer.skin-def .layer-content.none-icon .detail {margin:0 auto;}
 .do-layer.skin-def .layer-content .detail .prompt-value {width: 230px;height: 30px;padding: 0 8px;border: 1px solid #ddd;border-radius: 3px;}

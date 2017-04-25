@@ -33,7 +33,7 @@ q:before, q:after {content: '';content: none;}
 table {border-collapse: collapse;border-spacing: 0;}
 
 .do-fn-cl { *zoom: 1; }
-.do-fn-cl:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; overflow:hidden;} 
+.do-fn-cl:after {visibility: hidden;overflow:hidden; display: block;height: 0;content: "."; clear: both;} 
 .do-fn-clear {clear:both;display:inline;}
 
 .do-fn-show{display:block;}

@@ -19,7 +19,7 @@ define(['yua'], function(){
             }
         }
     }
-
+    yua.ui.drag = '0.0.1'
     // 元素拖动
     yua.directive('drag', {
         priority: 1500,

@@ -827,9 +827,11 @@ Renderer.prototype.heading = function(text, level, raw) {
         + level
         + ' class="md-hd" id="'
         + raw
+        + '"><a href="#'
+        + raw
         + '">'
         + text
-        + '</h'
+        + '</a></h'
         + level
         + '>\n';
 };
@@ -1027,7 +1029,7 @@ Parser.prototype.tok = function() {
         }
         case 'code': {
             return this.renderer.code(this.token.text,
-                this.token.lang,
+                this.token.lang || 'other',
                 this.token.escaped);
         }
         case 'table': {
@@ -1124,7 +1126,7 @@ Parser.prototype.tok = function() {
  */
 
 function escape(html, encode) {
-    return html
+    return (html)
         .replace(!encode ? /&(?!#?\w+;)/g : /&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')

@@ -13,6 +13,8 @@ define(['yua', 'lib/drag', 'css!./skin/def'], function(yua){
     if(window.layer){
         return window.layer
     }
+
+    yua.ui.layer = '0.0.4-base'
     var layerDom = {},
         layerObj = {},
         unique = null, //储存当前打开的1/2/3类型的弹窗
@@ -55,6 +57,7 @@ define(['yua', 'lib/drag', 'css!./skin/def'], function(yua){
                     return
                 }
                 layerObj[id].parentElem.replaceChild(layerObj[id].wrap, layerDom[id][1])
+                layerObj[id].wrap.style.display = 'none'
                 layerObj[id].show = false
 
             }catch(err){}
@@ -220,20 +223,21 @@ define(['yua', 'lib/drag', 'css!./skin/def'], function(yua){
                         if(!yua.vmodels[conf]){
                             yua(layerObj[conf].obj.init)
                         }
-                        
-                        yua.scan(layerDom[conf][1])
-                        layerObj[conf].obj.show()
 
                         layerObj[conf].parentElem.appendChild(layerDom[conf][1])
-                        layerObj[conf].parentElem.replaceChild(layerDom[conf][1], layerObj[conf].wrap)
+                        layerDom[conf][1].querySelector('.detail').appendChild(layerObj[conf].wrap)
+                        layerObj[conf].wrap.style.display = ''
+                        yua.scan(layerDom[conf][1])
+                        layerObj[conf].obj.show()
                         return conf
                     }
                 }else{
                     return new __constructor(conf).init.$id
                 }
             },
-            version: '0.0.2-base'
+            version: yua.ui.layer
         };
+    
 
     /*type: { // 弹窗类型对应的id值
         1: 'alert',
@@ -295,7 +299,7 @@ define(['yua', 'lib/drag', 'css!./skin/def'], function(yua){
             }
 
             layBox.innerHTML = this.getMenubar()
-                + '<div class="layer-content do-fn-cl '
+                + '<div class="layer-content do-layer-cl '
                     + (this.init.icon === 0 && 'none-icon' || '')
                     + '" style="'
                     + boxcss
@@ -306,7 +310,7 @@ define(['yua', 'lib/drag', 'css!./skin/def'], function(yua){
                 + (this.init.type === 5 && '<i class="arrow" style="border-top-color: '
                     + this.init.background
                     + '"></i>' || '')
-                
+            delete this.init.wrap
             return [this.init.shade ? coverBox : null, layBox]
         },
         getCont: function(){
@@ -314,7 +318,9 @@ define(['yua', 'lib/drag', 'css!./skin/def'], function(yua){
                 return this.getLoading(this.init.load)
             }else{
                 return this.getIcon()
-                    + '<div class="detail" :html="content"></div>'
+                    + '<div class="detail" '
+                    + (this.init.wrap ?  '' : ':html="content"')
+                    + '></div>'
             }
         },
         getLoading: function(style){
@@ -337,7 +343,7 @@ define(['yua', 'lib/drag', 'css!./skin/def'], function(yua){
                 }
                 
                 html += '>{{title}}'
-                    + '<a class="action-close deficon" :click="no(\'' + this.init.$id + '\')"></a>'
+                    + '<a class="action-close def-font" :click="no(\'' + this.init.$id + '\')"></a>'
                     + '</div>'
             }
             return html
@@ -348,7 +354,7 @@ define(['yua', 'lib/drag', 'css!./skin/def'], function(yua){
                 return ''
             }
             if(this.init.type < 4 || this.init.type === 5 || this.init.specialMode){
-                return '<span class="deficon icon-' + this.init.icon + '"></span>'
+                return '<span class="def-font msg-icon icon-' + this.init.icon + '"></span>'
             }
             return ''
         },
@@ -422,6 +428,16 @@ define(['yua', 'lib/drag', 'css!./skin/def'], function(yua){
                         style.right = fixOffset(_this.init.offset[1])
                         style.bottom = fixOffset(_this.init.offset[2])
                         style.left = fixOffset(_this.init.offset[3])
+                        //左右都为auto时,改为居中
+                        if(style.left === 'auto' && style.right === 'auto'){
+                            style.left = '50%'
+                            style.marginLeft = -parseInt(css.width) / 2;
+                        }
+                        //上下都为auto时,同样改为居中
+                        if(style.top === 'auto' && style.bottom === 'auto'){
+                            style.top = '50%'
+                            style.marginTop = -parseInt(css.height) / 2;
+                        }
                     }else{
                         style = yua.mix(style, {
                             marginLeft: -parseInt(css.width) / 2,
@@ -515,18 +531,19 @@ define(['yua', 'lib/drag', 'css!./skin/def'], function(yua){
             }
             
             if(!this.param){
+                init.wrap = true
                 init.type = 7;
                 init.$id = '$wrap-' + val;
                 if(!init.hasOwnProperty('menubar')){
                     init.menubar = false;
                 }
 
-                var tmp = new __constructor().ready(init),
-                    elem = this.element.cloneNode(true);
+                var tmp = new __constructor().ready(init);
                 
-                // 去掉隐藏之后,再放入content中
-                elem.style.display = ''
-                tmp.init.content = elem.outerHTML;
+                //去掉data-*属性
+                for(var i in this.element.dataset){
+                    delete this.element.dataset[i]
+                }
 
                 layerObj[tmp.init.$id] = {obj: tmp, parentElem: this.element.parentNode, wrap: this.element, show: false};
                 layerDom[tmp.init.$id] = tmp.create();
