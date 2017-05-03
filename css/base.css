@@ -24,8 +24,8 @@
 * {margin: 0;padding: 0;vertical-align: baseline;box-sizing:border-box;}
 
 /* HTML5 display-role reset for older browsers */
-article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {display: block;}
-img {border:0;display:block;}
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section,content {display: block;}
+img {border:0;display:inline-block;}
 ol, ul {list-style: none;}
 blockquote, q {quotes: none;}
 blockquote:before, blockquote:after,
