@@ -42,7 +42,7 @@ define(['lib/layer/base'], function(){
                         ME.insert(vm.$editor, wrap)
                         layer.close(h1Obj)
                     },
-                    offset: [offset.top + 37, 'auto', 'auto', offset.left],
+                    offset: [offset.top + 37 - document.body.scrollTop, 'auto', 'auto', offset.left - document.body.scrollLeft],
                     content: '<ul class="do-meditor-h1 do-fn-noselect meditor-font">'
                         + '<li :click="$insert(1)" class="h1">一级标题</li>'
                         + '<li :click="$insert(2)" class="h2">二级标题</li>'
@@ -121,7 +121,7 @@ define(['lib/layer/base'], function(){
                         ME.insert(vm.$editor, val)
                         layer.close(layid)
                     },
-                    offset: [offset.top + 37, 'auto', 'auto', offset.left],
+                    offset: [offset.top + 37 - document.body.scrollTop, 'auto', 'auto', offset.left - document.body.scrollLeft],
                     content: '<div class="do-meditor-common meditor-font">'
                         + '<section><span class="label">链接文字</span>'
                             + '<input class="input" :duplex="linkName" />'
@@ -151,7 +151,7 @@ define(['lib/layer/base'], function(){
                     fixed: true,
                     shadeClose: true,
                     arr: getOrderArr(36),
-                    offset: [offset.top + 37, 'auto', 'auto', offset.left],
+                    offset: [offset.top + 37 - document.body.scrollTop, 'auto', 'auto', offset.left - document.body.scrollLeft],
                     content: '<ul class="do-meditor-face">'
                         + '<li class="item" :repeat="arr" ><img :attr-src="ME.path + \'/addon/face/\' + el + \'.gif\'" :click="$insert(this.src)" /></li>'
                         + '</ul>',
@@ -168,7 +168,7 @@ define(['lib/layer/base'], function(){
                 title: '0行 x 0列',
                 fixed: true,
                 shadeClose: true,
-                offset: [offset.top + 37, 'auto', 'auto', offset.left],
+                offset: [offset.top + 37 - document.body.scrollTop, 'auto', 'auto', offset.left - document.body.scrollLeft],
                 matrix: objArr(10).map(function(){return objArr(10)}),
                 content: '<ul class="do-meditor-table">'
                     + '<li :repeat="matrix"><span :repeat-o="el" :class="{active: o.v}" :data="{x: $index, y: $outer.$index}"></span></li>'
@@ -239,7 +239,7 @@ define(['lib/layer/base'], function(){
                         ME.insert(vm.$editor, val)
                         layer.close(layid)
                     },
-                    offset: [offset.top + 37, 'auto', 'auto', offset.left],
+                    offset: [offset.top + 37 - document.body.scrollTop, 'auto', 'auto', offset.left - document.body.scrollLeft],
                     content: '<div class="do-meditor-common meditor-font">'
                         + '<section><span class="label">图片描述</span>'
                             + '<input class="input" :duplex="imgAlt" />'
@@ -313,7 +313,7 @@ define(['lib/layer/base'], function(){
                     content: '<div class="do-meditor-codeblock meditor-font">'
                         + '<section><span class="label">语言类型</span>'
                             + '<select :duplex="lang">'
-                                + '<option :ME.repeat="$lang" :attr-value="el.id">{{el.name || el.id}}</option>'
+                                + '<option :repeat="$lang" :attr-value="el.id">{{el.name || el.id}}</option>'
                             + '</select>'
                         + '</section>'
                         + '<section>'
@@ -333,19 +333,14 @@ define(['lib/layer/base'], function(){
         },
         fullscreen: function(elem, vm){
             vm.fullscreen = !vm.fullscreen
-            if(vm.fullscreen){
-                vm.preview = true
-                vm.htmlTxt = vm.$htmlTxt
-            }else{
-                vm.preview = false
-            }
+            vm.$onFullscreen(vm.fullscreen)
         },
         about: function(elem){
             var offset = yua(elem).offset()
             layer.open({
                 type: 7,
                 title: '关于编辑器',
-                offset: [offset.top + 37],
+                offset: [offset.top + 37 - document.body.scrollTop],
                 content: '<div class="do-meditor-about meditor-font">'
                     + '<pre>'
                     + ' __  __ _____    _ _ _\n'             

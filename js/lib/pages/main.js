@@ -2,6 +2,8 @@
 define(["yua","text!./main.htm", "css!./main"], function(yua, tpl) {
 
     yua.ui.pages = '0.0.1'
+    var colors = {plain: 1, green: 1, blue: 1, red: 1, orange: 1, grey: 1},
+        themes = ['skin-1 ', 'skin-2 '];
     //计算页码列表
     function calculate(vm){
         if (vm.total < 2)
@@ -21,7 +23,8 @@ define(["yua","text!./main.htm", "css!./main"], function(yua, tpl) {
         if(vm.curr + mid < vm.total){
             arr.push('...')
         }
-        vm.pageList = arr
+        vm.pageList.clear()
+        vm.pageList.pushArray(arr)
     }
 
     function update(pid, vm) {
@@ -39,6 +42,20 @@ define(["yua","text!./main.htm", "css!./main"], function(yua, tpl) {
 
     return yua.component('pages', {
         $template: tpl,
+        $construct: function(a, b, c){
+            yua.mix(a, b, c)
+            a.theme = themes[a.theme>>0]
+            if(!a.theme){
+                a.theme = themes[0]
+            }
+            if(a.color && colors[a.color]){
+                a.theme += a.color
+            }else{
+                a.theme += 'plain'
+            }
+            delete a.color
+            return a
+        },
         $init: function(vm) {
 
             calculate(vm)
@@ -55,6 +72,10 @@ define(["yua","text!./main.htm", "css!./main"], function(yua, tpl) {
                     return vm.url.replace('{id}', val)
                 }
             }
+            vm.$forceReset = function(){
+                vm.curr = 1
+                calculate(vm)
+            }
 
             vm.$jump = function(ev, val) {
                 if ('...' !== val) {
@@ -62,7 +83,7 @@ define(["yua","text!./main.htm", "css!./main"], function(yua, tpl) {
 
                     if (val !== void 0){
                         if('javascript:;' !== link){
-                            location.hash = link
+                            location.href = link
                         }
                         var pid = val >> 0;
                         update(pid, vm)
@@ -90,6 +111,9 @@ define(["yua","text!./main.htm", "css!./main"], function(yua, tpl) {
                 }
             })
         },
+        $ready: function(vm){
+            vm.$onSuccess(vm)
+        },
         curr: 1,
         total: 1,
         max: 5,
@@ -104,9 +128,12 @@ define(["yua","text!./main.htm", "css!./main"], function(yua, tpl) {
             home: "首页",
             end: "末页"
         },
-        $skipArray: ['max', 'btns', 'url'],
+        theme: '',
+        $skipArray: ['max', 'btns', 'url', 'theme'],
         $setUrl: yua.noop,
         $jump: yua.noop,
-        $onJump: yua.noop
+        $onJump: yua.noop,
+        $onSuccess: yua.noop,
+        $forceReset: yua.noop,
     })
 });

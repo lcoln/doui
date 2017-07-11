@@ -188,9 +188,9 @@ define(['yua', 'lib/drag', 'css!./skin/def'], function(yua){
                 conf.menubar = false;
                 return __layer.open(conf)
             },
-            prompt: function(msg, callback){
-                if(typeof callback !== 'function'){
-                    return console.error('argument [callback] requires a function, but ' + (typeof callback) + ' given')
+            prompt: function(msg, yescb, nocb){
+                if(typeof yescb !== 'function'){
+                    return console.error('argument [callback] requires a function, but ' + (typeof yescb) + ' given')
                 }
                 var conf = {
                         type: 3,
@@ -199,9 +199,12 @@ define(['yua', 'lib/drag', 'css!./skin/def'], function(yua){
                         title: msg,
                         content: '<input class="prompt-value" :duplex="prompt" />',
                         yes: function(id){
-                            callback(id, yua.vmodels[id].prompt)
+                            yescb(id, yua.vmodels[id].prompt)
                         }
                     }
+                if(typeof nocb === 'function'){
+                    conf.no = nocb
+                }
                 return __layer.open(conf)
             },
             use: function(skin, callback){
@@ -486,7 +489,7 @@ define(['yua', 'lib/drag', 'css!./skin/def'], function(yua){
                 this.init.$id = uuid();
             }
             if(this.init.icon > 17){
-                this.icon.icon = 17
+                this.init.icon = 17
             }
             //base版没有iframe类型
             if(this.init.type === 4){

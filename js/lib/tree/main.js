@@ -12,12 +12,12 @@ define(['yua', 'css!./skin/def.css'], function(){
     //储存版本信息
     yua.ui.tree = '0.0.1'
 
-    var box = '<ul class="do-tree skin-{skin}">{li}</ul>',
+    var box = '<ul>{li}</ul>',
         ul = '<ul :class="{open: {it}.open}">{li}</ul>',
         li = '<li :class="{open: {it}.open, dir: {it}.children}">'
-        + '<em :click="$toggle({it})"></em><span '
-        + ':click="$click({it})" '
-        + ':text="{it}.name"></span>{child}</li>';
+            + '<em :click="$toggle({it})"></em>'
+            + '<span :click="$select({it})" :class="{active: {it}.id === currItem}" :text="{it}.name"></span>'
+            + '{child}</li>';
 
 
     function repeat(arr, name){
@@ -31,50 +31,61 @@ define(['yua', 'css!./skin/def.css'], function(){
                 child += repeat(it.children, from +'.children')
                 child = ul.replace('{li}', child).replace('{it}', from)
             }
-            if(child){
-                
-            }
             html = html.replace(/\{child\}/, child)
         })
 
-        
         return html
     }
 
-    return yua.component('tree', {
-        $template: '',
-        $construct: function(base, opt, attr){
-            if(!opt.from && !attr.from){
-                throw new Error('tree组件必须传入「from」属性')
+    function format(arr){
+        var tmp = {}, farr = []
+        arr.sort(function(a, b){
+            return (a.pid === b.pid) ? (a.sort - b.sort) : (a.pid - b.pid)
+        })
+        arr.forEach(function(it){
+            tmp[it.id] = it
+            var parentItem = tmp[it.pid]
+            delete it.pid
+            
+            if(!parentItem){
+                return farr.push(tmp[it.id])
             }
-            
-            var from = attr.from || opt.from,
-                arr = base.$up[from].$model,
-                tpl = repeat(arr, from)
+            parentItem.open = !!parentItem.open
+            parentItem.children = parentItem.children || []
+            parentItem.children.push(it)
+        })
+        tmp = arr = null
+        return farr
+    }
 
-            delete attr.from
-            delete opt.from
-            yua.mix(base, opt, attr)
-
-            base.skin = base.skin || 'def'
-
-
-            tpl = box.replace('{li}', tpl).replace('{skin}', base.skin)
-
-            base.$template = tpl
-            
-            return base
-        },
+    return yua.component('tree', {
+        $template: '<div class="do-tree" :class="{{$skin}}" :html="treeHTML"></div>',
         $init: function(vm){
-            
-            vm.$click = function(obj){
-                
+            vm.$select = function(obj){
+                vm.currItem = obj.id
                 if(vm.$onClick){
                     vm.$onClick(obj)
                 }
             }
+            vm.$update = function(arr){
+                vm.treeArr.clear()
+                vm.treeArr.pushArray(format(arr))
+                vm.currItem = -1
+                var tpl = repeat(vm.treeArr.$model, 'treeArr')
+                vm.treeHTML = box.replace('{li}', tpl)
+            }
         },
-        $click: yua.noop,
+        $ready: function(vm){
+            vm.$onSuccess(vm)
+        },
+        $skin: 'skin-def',
+        treeHTML: '',
+        currItem: -1,
+        treeArr: [],
+        $select: yua.noop,
+        $update: yua.noop,
+        $onSuccess: yua.noop,
+        $onClick: yua.noop,
         $toggle: function(obj){
             obj.open = !obj.open
         }

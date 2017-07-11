@@ -49,7 +49,7 @@ define(['yua'], function(yua){
     win.Xhr = function(){
         return new XMLHttpRequest()
     }
-    // var supportCors = 'withCredentials' in Xhr()
+    var supportCors = 'withCredentials' in Xhr()
 
     // ------------------- 几个解释方法 -----------------------
 
@@ -543,6 +543,8 @@ define(['yua'], function(yua){
         // 2.2 如果不是跨域请求，则自动加上一条header信息，用以标识这是ajax请求
         if(!this.opt.crossDomain){
             this.set('X-Requested-With', 'XMLHttpRequest')
+        }else{
+            supportCors && (this.xhr.withCredentials = true)
         }
 
 

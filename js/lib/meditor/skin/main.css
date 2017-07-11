@@ -17,7 +17,7 @@
 ::-webkit-scrollbar-thumb {background:#cad5d5;}
 ::-webkit-scrollbar-thumb:hover {background:#9bacac;}
 
-.do-meditor {position:relative;width:100%;height:100%;min-height:180px;border:1px solid #ddd;background:#fff;color:#666;}
+.do-meditor {position:relative;width:100%;height:100%;min-height:180px;padding-top:43px;border:1px solid #ddd;background:#fff;color:#666;}
 .meditor-font {font-family:"PingFang SC","Helvetica Neue","Hiragino Sans GB","Segoe UI","Microsoft YaHei",sans-serif;}
 
 
@@ -25,7 +25,7 @@
 
 /* 关于编辑器模块*/
 .do-meditor-about {width:400px;padding:10px 20px;}
-.do-meditor-about pre {padding-bottom:15px}
+.do-meditor-about pre {padding-bottom:15px;line-height:1;}
 .do-meditor-about a {color:#049789}
 .do-meditor-about p {margin:0 auto 5px;}
 
@@ -79,7 +79,7 @@
 
 
 
-.do-meditor .tool-bar {position:relative;z-index:99;width:100%;height:auto;min-height:43px;padding:5px 10px;border-bottom:1px solid #ddd;background:#f5f5f5;color:#666;}
+.do-meditor .tool-bar {overflow:hidden;position:absolute;top:0;left:0;z-index:99;width:100%;height:43px;padding:5px 10px;border-bottom:1px solid #ddd;background:#f5f5f5;color:#666;}
 .do-meditor .tool-bar .edicon {display:inline-block;width:30px;height:32px;text-align:center;font:20px/32px "edicon" !important;-webkit-font-smoothing: antialiased;-webkit-text-stroke-width: 0.2px;-moz-osx-font-smoothing: grayscale;}
 .do-meditor .tool-bar .edicon:hover {background:#e5e5e5;}
 .do-meditor .tool-bar .icon-pipe {width:20px;}
@@ -107,46 +107,48 @@
 .do-meditor .tool-bar .icon-help::before {content:"\e614"}
 
 
-.do-meditor .editor-body {float:left;position:absolute;z-index:89;left:0;top:0;width:100%;height:100%;padding-top:43px;}
-.do-meditor .editor-body>textarea {overflow:hidden;overflow-y:auto;width:100%;height:100%;padding:5px;border:0;outline:none;resize:none;color:#666;}
-.do-meditor .editor-md-preview {position:absolute;z-index:90;right:0;top:0;width:100%;height:100%;padding-top:43px;}
-
-.do-meditor .editor-md-preview>content.preview {overflow:hidden;overflow-y:auto;display:block;width:100%;height:100%;padding:10px;color:#666;font-size:14px;background:#fff;}
+.do-meditor .editor-body {float:left;width:100%;height:100%;background:#fff;}
+.do-meditor .editor-body>textarea {overflow:hidden;overflow-y:auto;width:100%;height:100%;padding:5px;border:0;outline:none;resize:none;color:#666;background:none;}
+.do-meditor .md-preview {float:right;overflow:hidden;overflow-y:auto;display:block;width:50%;height:100%;padding:10px;line-height:2;border-left:1px solid #ddd;color:#666;font-size:14px;background:#fff;}
 
 
-.do-meditor .editor-md-preview .md-hd {position:relative;margin:15px 0;padding-left:30px;font-weight:normal;font-size:17px;}
-.do-meditor .editor-md-preview h1.md-hd {padding-left:0;}
-.do-meditor .editor-md-preview .md-hd a {position:relative;display:inline-block;padding:0 8px;background:#fff;color:#454545}
-.do-meditor .editor-md-preview h1.md-hd a {padding-left:0;color:#000;}
-.do-meditor .editor-md-preview h2.md-hd a {color:#000;}
+.do-meditor .md-preview .md-hd {position:relative;margin:15px 0;padding-left:30px;font-weight:normal;font-size:17px;}
+.do-meditor .md-preview h1.md-hd {padding-left:0;}
+.do-meditor .md-preview .md-hd a {position:relative;display:inline-block;padding:0 8px;background:#fff;color:#454545}
+.do-meditor .md-preview .md-hd a:hover {text-decoration:none;}
+.do-meditor .md-preview h1.md-hd a {padding-left:0;color:#000;}
+.do-meditor .md-preview h2.md-hd a {color:#000;}
 
-.do-meditor .editor-md-preview h1.md-hd {margin:0 0 30px;font-size:25px;}
-.do-meditor .editor-md-preview h2.md-hd {margin:20px 0;font-size:23px;}
-.do-meditor .editor-md-preview h3.md-hd {margin:20px 0 15px;font-size:20px;}
-.do-meditor .editor-md-preview h1:after {display:block;width:100%;content:" ";border-bottom:1px solid #ddd;}
-.do-meditor .editor-md-preview h2:before,
-.do-meditor .editor-md-preview h3:before,
-.do-meditor .editor-md-preview h4:before,
-.do-meditor .editor-md-preview h5:before,
-.do-meditor .editor-md-preview h6:before {display:block;position:absolute;left:0;top:50%;width:100%;content:" ";border-bottom:1px solid #ddd;}
+.do-meditor .md-preview h1.md-hd {margin:0 0 30px;font-size:25px;}
+.do-meditor .md-preview h2.md-hd {margin:20px 0;font-size:23px;}
+.do-meditor .md-preview h3.md-hd {margin:20px 0 15px;font-size:20px;}
+.do-meditor .md-preview h1:after {display:block;width:100%;content:" ";border-bottom:1px solid #ddd;}
+.do-meditor .md-preview h2:before,
+.do-meditor .md-preview h3:before,
+.do-meditor .md-preview h4:before,
+.do-meditor .md-preview h5:before,
+.do-meditor .md-preview h6:before {display:block;position:absolute;left:0;top:50%;width:100%;content:" ";border-bottom:1px solid #ddd;}
 
-.do-meditor .editor-md-preview a {text-decoration:none;}
-.do-meditor .editor-md-preview blockquote {margin:10px 0;padding:5px 10px;border-left:5px solid #6bb294;background:#f7f7f7}
-.do-meditor .editor-md-preview table thead tr {background:#f2f2f2}
-.do-meditor .editor-md-preview table thead th {padding:0 8px;border:1px solid #ddd}
-.do-meditor .editor-md-preview table tbody td {padding:0 8px;border:1px solid #ddd}
+.do-meditor .md-preview a {text-decoration:none;}
+.do-meditor .md-preview a:hover {text-decoration:underline;}
+.do-meditor .md-preview p {margin:15px 0;}
+.do-meditor .md-preview blockquote {margin:10px 0;padding:5px 10px;border-left:5px solid #6bb294;background:#f7f7f7}
+.do-meditor .md-preview blockquote p {margin:0;}
+.do-meditor .md-preview table thead tr {background:#f2f2f2}
+.do-meditor .md-preview table thead th {padding:0 8px;border:1px solid #ddd}
+.do-meditor .md-preview table tbody td {padding:0 8px;border:1px solid #ddd}
 
-.do-meditor .editor-md-preview hr {margin:30px 0;}
-.do-meditor .editor-md-preview ol {list-style:decimal inside none;}
-.do-meditor .editor-md-preview ul {list-style:disc inside none;}
-.do-meditor .editor-md-preview li ol {margin-left:2em;}
-.do-meditor .editor-md-preview li ul {margin-left:2em;list-style-type: circle;}
-.do-meditor .editor-md-preview li ol ul,
-.do-meditor .editor-md-preview li ul ul {list-style-type: square;}
+.do-meditor .md-preview hr {margin:30px 0;border-bottom:0;}
+.do-meditor .md-preview ol {margin-left:2em;list-style:decimal outside none;}
+.do-meditor .md-preview ul {margin-left:2em;list-style:disc outside none;}
+.do-meditor .md-preview li ol {margin-left:2em;}
+.do-meditor .md-preview li ul {margin-left:2em;list-style-type: circle;}
+.do-meditor .md-preview li ol ul,
+.do-meditor .md-preview li ul ul {list-style-type: square;}
 
 
 /*全屏模式*/
 .do-meditor.fullscreen {position:fixed;left:0;top:0;z-index:999;}
 
+.do-meditor.preview .editor-body,
 .do-meditor.fullscreen .editor-body {width:50%}
-.do-meditor.fullscreen .editor-md-preview {width:50%;border-left:1px solid #ddd;}

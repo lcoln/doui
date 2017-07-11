@@ -87,7 +87,14 @@ define(['yua'], function(){
             this.errorFn && this.errorFn(hash);
         },
         on: function(rule, callback){
-            this._add('get', rule, callback);
+            var _this = this
+            if(Array.isArray(rule)){
+                rule.forEach(function(it){
+                    _this._add('get', it, callback);
+                })
+            }else{
+                this._add('get', rule, callback);
+            }
         }
     }
 

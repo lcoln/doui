@@ -21,6 +21,7 @@ define([
         }
     })
 
+    var editorVM = []
     yua.ui.meditor = '0.0.1'
     //存放编辑器公共静态资源
     window.ME = {
@@ -28,11 +29,13 @@ define([
         toolbar: { //工具栏title
             pipe: '',
             h1: '标题',
+            quote: '引用文本',
             bold: '粗体',
             italic: '斜体',
             through: '删除线',
             unordered: '无序列表',
             ordered: '有序列表',
+            link: '超链接',
             hr: '横线',
             time: '插入当前时间',
             face: '表情',
@@ -47,7 +50,7 @@ define([
         },
         addon: {}, //已有插件
         //往文本框中插入内容
-        insert: function(dom, val){
+        insert: function(dom, val, isSelect){
             if(document.selection){
                 dom.focus()
                 var range = document.selection.createRange()
@@ -64,8 +67,7 @@ define([
                     + val
                     + dom.value.slice(endPos, dom.value.length);
 
-                
-                dom.selectionStart = startPos
+                dom.selectionStart = isSelect ? startPos : (startPos + val.length)
                 dom.selectionEnd = startPos + val.length
                 dom.scrollTop = scrollTop
                 dom.focus()
@@ -123,6 +125,33 @@ define([
                 }
                 return result
             }
+        },
+        get: function(id){
+            if(id === void 0){
+                id = editorVM.length - 1
+            }
+            var vm = editorVM[id]
+            if(vm){
+                return {
+                    id: vm.$id,
+                    getVal: function(){
+                        return vm.plainTxt.trim()
+                    },
+                    getHtml: function(){
+                        return vm.$htmlTxt
+                    },
+                    setVal: function(txt){
+                        vm.plainTxt = txt
+                    },
+                    show: function(){
+                        vm.editorVisible = true
+                    },
+                    hide: function(){
+                        vm.editorVisible = false
+                    }
+                }
+            }
+            return null
         }
     }
     //获取真实的引用路径,避免因为不同的目录结构导致加载失败的情况
@@ -274,14 +303,14 @@ define([
 
 
         yua.component('meditor', {
-            $template: '<div class="do-meditor meditor-font" :class="{fullscreen: fullscreen}">'
+            $template: '<div class="do-meditor meditor-font" '
+                + ':visible="editorVisible" '
+                + ':class="{fullscreen: fullscreen, preview: preview}">'
                 + '<div class="tool-bar do-fn-noselect">{toolbar}</div>'
                 + '<div class="editor-body">'
                     + '<textarea spellcheck="false" :duplex="plainTxt" :attr="{disabled: disabled}" :on-paste="$paste($event)" id="{uuid}"></textarea>'
                 + '</div>'
-                + '<div class="editor-md-preview" :visible="preview">'
-                    + '<content class="preview" :html="htmlTxt"></content>'
-                + '</div>'
+                + '<content class="md-preview" :visible="preview" :html="htmlTxt"></content>'
             + '</div>',
             $$template: function(txt){
                 
@@ -299,6 +328,10 @@ define([
                         return ME.path + '/addon/' + name
                     })
                     delete base.$addons
+                }
+                if(base.hasOwnProperty('$show')){
+                    base.editorVisible = base.$show
+                    delete base.$show
                 }
                 return base
             },
@@ -324,6 +357,7 @@ define([
             $ready: function(vm){
                 vm.$editor = document.querySelector('#' + vm.$id)
                 
+                editorVM.push(vm)
                 //自动加载额外的插件
                 require(extraAddons, function(){
                     var args = Array.prototype.slice.call(arguments, 0)
@@ -334,17 +368,27 @@ define([
 
                 yua(vm.$editor).bind('keydown', function(ev){
                     
-                    //tab键改为插入4个空格,阻止默认事件,防止焦点失去
+                    var wrap = ME.selection(vm.$editor) || '',
+                        select = !!wrap;
+                    //tab键改为插入2个空格,阻止默认事件,防止焦点失去
                     if(ev.keyCode === 9){
-                        var wrap = ME.selection(vm.$editor) || ''
                         wrap = wrap.split('\n').map(function(it){
                             return ev.shiftKey ? it.replace(/^\s\s/, '') : '  ' + it
                         }).join('\n')
-                        ME.insert(this, wrap)
+                        ME.insert(this, wrap, select)
                         ev.preventDefault()
+                    }
+                    //修复按退格键删除选中文本时,选中的状态不更新的bug
+                    if(ev.keyCode === 8){
+                        if(select){
+                            ME.insert(this, '', select)
+                            ev.preventDefault()
+                        }
                     }
                     
                 })
+                //编辑器成功加载的回调
+                vm.$onSuccess(ME.get(), vm)
             },
             $paste: function(ev){
                 var txt = ev.clipboardData.getData('text/plain').trim(),
@@ -360,15 +404,22 @@ define([
                 ev.preventDefault()
             },
             $compile: function(){
+                var txt = this.plainTxt.trim()
+                txt = txt.replace(/<script>/g, '&lt;script&gt;')
+                    .replace(/<\/script>/g, '&lt;/script&gt;')
+                
                 //只解析,不渲染
-                this.$htmlTxt = marked(this.plainTxt.trim())
+                this.$htmlTxt = marked(txt)
             },
             $onToolbarClick: yua.noop,
+            $onSuccess: yua.noop,
             $onUpdate: yua.noop,
+            $onFullscreen: yua.noop,
             disabled: false, //禁用编辑器
-            fullscreen: true, //是否全屏
+            fullscreen: false, //是否全屏
             preview: false, //是否显示预览
             $editor: null, //编辑器元素
+            editorVisible: true,
             $htmlTxt: '', //临时储存html文本
             htmlTxt: '', //用于预览渲染
             plainTxt: '' //纯md文本

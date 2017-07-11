@@ -1,0 +1,98 @@
+@charset "UTF-8";
+/**
+ * 
+ * @authors yutent (yutent@doui.cc)
+ * @date    2017-05-20 21:35:30
+ * @version $Id$
+ */
+
+$cg: #1abc9c #48c9b0 #16a085;
+$cb: #3498db #5dade2 #2c81ba;
+$cr: #e74c3c #ec7063 #c54133;
+$co: #f39c12 #f1c40f #e67e22;
+$cp: #e7e8eb #ecf0f1 #bdc3c7;
+$cgr: #34495e #5d6d7e #2c3e50;
+
+@mixin ts($c: all, $t: .1s, $m: ease-in-out){
+    transition:$c $t $m;
+}
+/*--------各种按钮---------*/
+.do-ui-button {display:inline-block;padding:0 5px;text-align:center;font-size:12px;@include ts;
+
+    &.medium {min-width:100px;height:35px;line-height:35px;font-size:15px}
+    &.large {min-width:150px;height:50px;line-height:50px;font-size:18px;}
+    &.radius-3 {border-radius:3px;}
+    &.radius-5 {border-radius:5px;}
+
+    &.green {background:nth($cg, 1);color:#fff;}
+    &.green:hover {background:nth($cg, 2);}
+    &.green:active {background:nth($cg, 3);}
+    &.blue {background:nth($cb, 1);color:#fff;}
+    &.blue:hover {background:nth($cb, 2);}
+    &.blue:active {background:nth($cb, 3);}
+    &.red {background:nth($cr, 1);color:#fff;}
+    &.red:hover {background:nth($cr, 2);}
+    &.red:active {background:nth($cr, 3);}
+    &.orange {background:nth($co, 1);color:#fff;}
+    &.orange:hover {background:nth($co, 2);}
+    &.orange:active {background:nth($co, 3);}
+    &.plain {background:nth($cp, 1);color:nth($cgr, 1);}
+    &.plain:hover {background:nth($cp, 2);}
+    &.plain:active {background:nth($cp, 3);}
+    &.grey {background:nth($cgr, 1);color:#fff;}
+    &.grey:hover {background:nth($cgr, 2);}
+    &.grey:active {background:nth($cgr, 3);}
+}
+
+
+
+
+/*--------各种input---------*/
+
+
+.do-ui-input {display:inline-block;min-height:30px;padding:0 5px;border:1px solid nth($cp, 3);background:#fff;color:nth($cgr, 1);outline:none;@include ts;
+
+    &::-webkit-input-placeholder {color:nth($cp, 3);}
+
+    &.radius-3 {border-radius:3px;}
+    &.radius-5 {border-radius:5px;}
+    
+    &:focus {border-color:nth($cg, 1);}
+    &.alert {border-color:nth($cr, 1);color:nth($cr, 1)}
+    &.disabled {border-color:transparent;background:nth($cp, 1);color:nth($cp, 3)}
+
+}
+
+
+
+.do-ui-select {display:inline-block;min-height:30px;padding:0 5px;border:1px solid nth($cp, 3);background:#fff;color:nth($cgr, 1);outline:none;-moz-appearance: none;@include ts;
+    
+    &::-ms-expand {display:none;}
+    &.radius-3 {border-radius:3px;}
+    &.radius-5 {border-radius:5px;}
+
+    &:focus {border-color:nth($cg, 1);}
+    &.alert {border-color:nth($cr, 1);color:nth($cr, 1)}
+    &.disabled {border-color:transparent;background:nth($cp, 1);color:nth($cp, 3)}
+}
+
+
+.do-ui-radio,
+.do-ui-checkbox {display:inline-block;position:relative;width:auto;height:auto;min-height:30px;padding-left:50px;background:#fff;
+    
+    >input {position:absolute;left:25px;top:5px;width:20px;height:20px;outline:none;-webkit-appearance:none;background:#fff;border:2px solid nth($cg, 1);border-radius:3px;
+        
+        &:checked {background:nth($cg, 1);}
+    }
+}
+.do-ui-checkbox {
+    >input:checked {box-shadow:inset 0 0 0 2px #fff;}
+}
+.do-ui-radio {
+    >input {left:10px;width:35px;border-radius:10px;border-color:nth($cp, 3);background:nth($cp, 3);
+        
+        &::after {float:left;display:block;width:16px;height:16px;border-radius:50%;content:"";background:#fff;}
+        &:checked {border-color:nth($cg, 1);}
+        &:checked::after {float: right;}
+    }
+}

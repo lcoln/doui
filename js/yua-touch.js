@@ -65,10 +65,21 @@ var W3C = window.dispatchEvent
 var root = DOC.documentElement
 var yuaFragment = DOC.createDocumentFragment()
 var cinerator = DOC.createElement("div")
-var class2type = {}
-"Boolean Number String Function Array Date RegExp Object Error".replace(rword, function (name) {
-    class2type["[object " + name + "]"] = name.toLowerCase()
-})
+var class2type = {
+        '[object Boolean]': 'boolean',
+        '[object Number]': 'number',
+        '[object String]': 'string',
+        '[object Function]': 'function',
+        '[object Array]': 'array',
+        '[object Date]': 'date',
+        '[object RegExp]': 'regexp',
+        '[object Object]': 'object',
+        '[object Error]': 'error',
+        '[object AsyncFunction]': 'asyncfunction',
+        '[object Promise]': 'promise',
+        '[object Generator]': 'generator',
+        '[object GeneratorFunction]': 'generatorfunction'
+    }
 var bindingID = 1024
 var IEVersion = NaN
 if (window.VBArray) {
@@ -531,6 +542,7 @@ yua.mix({
         }
         return result
     },
+    deepCopy: toJson,
     eventHooks: {},
     /*绑定事件*/
     bind: function (el, type, fn, phase) {
@@ -3088,10 +3100,6 @@ var rnoscanAttrBinding = /^if|widget|repeat$/
 var rnoscanNodeBinding = /^html|include$/
 
 function scanNodeList(elem, vmodels) {
-    if(isWidget(elem)){
-        // elem = elem.content
-        log(elem)
-    }
     var nodes = yua.slice(elem.childNodes)
     scanNodeArray(nodes, vmodels)
 }
@@ -3361,10 +3369,10 @@ yua.component = function (name, opts) {
 
 
                 //==========构建VM=========
-                var keepSlot = componentDefinition.$slot
-                var keepReplace = componentDefinition.$replace
                 var keepContainer = componentDefinition.$container
                 var keepTemplate = componentDefinition.$template
+                delete componentDefinition.$up
+                delete componentDefinition.$ups
                 delete componentDefinition.$slot
                 delete componentDefinition.$replace
                 delete componentDefinition.$container
@@ -3700,8 +3708,8 @@ yua.directive("class", {
     },
     update: function (val) {
         var obj = val
-        if(!obj)
-            return log('class绑定错误')
+        if(!obj || this.param)
+            return log('class指令语法错误 %c %s="%s"', 'color:#f00', this.name, this.expr)
 
         if(typeof obj === 'string'){
             obj = {}
@@ -3711,9 +3719,6 @@ yua.directive("class", {
         if(!yua.isPlainObject(obj)){
             obj = obj.$model
         }
-
-        if(this.param)
-            return log('不再支持:class-xx="yy"的写法', this.name)
 
         var $elem = yua(this.element)
         for(var i in obj){
@@ -3745,7 +3750,7 @@ yua.directive("css", {
                     $elem.css(i, obj[i])
                 }
             }catch(err){
-                log('样式格式错误', val)
+                log('样式格式错误 %c %s="%s"', 'color:#f00', this.name, this.expr)
             }
         }else{
             $elem.css(this.param, val)
@@ -3786,8 +3791,8 @@ yua.directive('rule', {
     init: function(binding){
         if(binding.param && !__rules[binding.param]){
             __rules[binding.param] = [];
-            binding.target = __rules[binding.param]
         }
+        binding.target = __rules[binding.param]
     },
     update: function(obj){
         var _this = this,
@@ -4071,7 +4076,9 @@ var duplexBinding = yua.directive("duplex", {
             this.init = 1
         }
         switch (this.xtype) {
-            case "input":
+            case "input": 
+                elem.value = value;
+                break;
             case "change":
                 curValue = this.pipe(value, this, "set")  //fix #673
                 if (curValue !== this.oldValue) {

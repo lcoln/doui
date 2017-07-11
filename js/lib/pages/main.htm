@@ -1,4 +1,4 @@
-<div class="do-pages do-fn-noselect" :class="{{'skin-' + skin}}">
+<div class="do-pages do-fn-noselect" :class="{{theme}}">
     <a class="normal"
         :if="curr > 1 && !simpleMode"
         :attr="{href: $setUrl(1)}"

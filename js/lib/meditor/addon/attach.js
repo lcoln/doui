@@ -78,6 +78,28 @@ define([
     }
 
 
+    function uploadScreenshot(vm, blob){
+        var upload = new Uploader(vm.uploadUrl || ME.uploadUrl)
+        if(ME.beforeUpload){
+            ME.beforeUpload(Date.now().toString(16) + '.jpg', function(qn){
+                upload.field('file', blob)
+                    .field('token', qn.token)
+                    .field('key', qn.key)
+                    .onEnd(function(json){
+                        ME.insert(vm.$editor, '![截图](' + qn.url + ')')
+                    })
+                    .start()
+            })
+        }else{
+            upload.field('file', blob)
+                .onEnd(function(json){
+                    ME.insert(vm.$editor, '![截图](' + json.data.url + ')')
+                })
+                .start()
+        }
+    }
+
+
     var $init = function(vm){
             if(!vm.uploadUrl && !ME.uploadUrl){
                 console.error('使用附件上传,必须先设置uploadUrl;\n可以给vm增加uploadUrl属性,也可以通过ME.uploadUrl设置')
@@ -85,7 +107,9 @@ define([
             if(!vm.manageUrl && !ME.manageUrl){
                 console.error('使用附件管理功能,必须先设置manageUrl;\n可以给vm增加manageUrl属性,也可以通过ME.manageUrl设置')
             }
-            // ME.addon.image()
+            if(!ME.maxSize){
+                ME.maxSize = 4194304
+            }
 
             vm.$editor.addEventListener('paste', function(ev){
                 var txt = ev.clipboardData.getData('text/plain').trim(),
@@ -107,12 +131,45 @@ define([
                     }
 
                     if(blob !== null) {
-                        var upload = new Uploader(vm.uploadUrl || ME.uploadUrl)
-                        
-                        upload.field('image', blob)
-                            .onEnd(function(json){
-                            ME.insert(vm.$editor, '![截图](' + json.data.url + ')')
-                        }).start()
+                        layer.msg('截图处理中...')
+                        // 压缩截图,避免文件过大
+                        var reader = new FileReader()
+                        reader.onload = function(){
+                            var img = document.createElement('img'),
+                                canvas = document.createElement('canvas')
+
+                            img.onload = function(){
+                                canvas.width = img.width
+                                canvas.height = img.height
+
+                                var ctx = canvas.getContext('2d')
+                                ctx.clearRect(0,0, canvas.width, canvas.height)
+                                ctx.drawImage(this, 0, 0, canvas.width, canvas.height)
+
+
+                                if(canvas.toBlob){
+                                    canvas.toBlob(function(obj){
+                                        uploadScreenshot(vm, obj)
+                                    }, 'image/jpeg', 0.8)
+                                }else{
+                                    var base64 = canvas.toDataURL('image/jpeg', 0.8),
+                                        buf = atob(base64.split(',')[1]),
+                                        arrBuf = new ArrayBuffer(buf.length),
+                                        intArr = new Uint8Array(arrBuf),
+                                        obj = null;
+
+                                    for(var i = 0; i < buf.length; i++){
+                                        intArr[i] = buf.charCodeAt(i)
+                                    }
+                                    obj = new Blob([intArr], {type: 'image/jpeg'})
+                                    uploadScreenshot(vm, obj)
+                                }
+
+                                
+                            }
+                            img.src = this.result
+                        }
+                        reader.readAsDataURL(blob)
                     }
                 }
                 ev.preventDefault()
@@ -131,7 +188,7 @@ define([
         fixCont = function(){
             return '<div class="do-meditor-attach meditor-font">'
                 + '<dl class="attach-wrap">'
-                    + '<dt class="tab-box">'
+                    + '<dt class="tab-box" :drag="do-layer" data-limit="window">'
                         + '<span class="item" :class="active:tab === 1" :click="$switch(1)">' + lang[openType][0] +'</span>'
                         + '<span class="item" :class="active:tab === 2" :click="$switch(2)">本地上传</span>'
                         + '<span class="item" :class="active:tab === 3" :click="$switch(3)">' + lang[openType][1] + '</span>'
@@ -150,12 +207,14 @@ define([
                             + '</section>'
                         + '</div>'
                         + '<div class="local" :visible="tab === 2">'
-                            + '<div class="select-file"><input id="meditor-attch" multiple :change="$change" type="file" class="hide" /><span class="file" :click="$select">选择文件</span></div>'
+                            + '<div class="select-file"><input id="meditor-attch" multiple :change="$change" type="file" class="hide" /><span class="file" :click="$select">选择文件</span><span class="tips">(上传大小限制:单文件最大'
+                                + (ME.maxSize/1048576).toFixed(2)
+                                + 'MB)</span></div>'
                             + '<ul class="upload-box">'
                                 + '<li class="tr thead"><span class="td name">文件名</span><span class="td progress">上传进度</span><span class="td option">操作</span></li>'
                                 + '<li class="tr" :repeat="uploadFile">'
                                     + '<span class="td name" :text="el.name"></span>'
-                                    + '<span class="td progress" :text="el.progress"></span>'
+                                    + '<span class="td progress" :html="el.progress"></span>'
                                     + '<span class="td option"><a href="javascript:;" :click="$insert(el)">插入</a></span>'
                                 + '</li>'
                             + '</ul>'
@@ -163,7 +222,7 @@ define([
                         + '<ul class="manager" :visible="tab === 3">'
                             + '<li class="item" :repeat="attachList" :click="$insert(el)">'
                                 + '<span class="thumb" :html="el.thumb"></span>'
-                                + '<p class="name" :text="el.name"></p>'
+                                + '<p class="name" :attr-title="el.name" :text="el.name"></p>'
                             + '</li>'
                         + '</ul>'
                     + '</dt>'
@@ -179,20 +238,42 @@ define([
      */
     function uploadFile(files, vm){
         for(var i = 0, it; it = files[i++];){
-            if(openType === 'image' && !/image/.test(it.type)){
+
+            if(openType === 'image' && !/\.(jpg|jpeg|png|gif|bmp|webp|ico)$/.test(it.name)){
+                vm.uploadFile.push({name: it.name, progress: '<span class="red">0%(失败,不允许的文件类型)</span>', url: ''})
                 continue
             }
+            if(it.size > ME.maxSize){
+                vm.uploadFile.push({name: it.name, progress: '<span class="red">0%(文件体积过大)</span>', url: ''})
+                continue
+            }
+            var fixName = Date.now().toString(16) + it.name.slice(it.name.lastIndexOf('.'))
+
             var idx = vm.uploadFile.length,
                 upload = new Uploader(vm.uploadUrl || ME.uploadUrl)
-            
 
             vm.uploadFile.push({name: it.name, progress: '0%', url: ''})
-            upload.field(openType, it)
-                .onProgress(function(val){
-                vm.uploadFile[idx].progress = val + '%'
-            }).onEnd(function(json){
-                vm.uploadFile[idx].url = json.data.url
-            }).start()
+
+            upload.field('file', it)
+
+            if(ME.beforeUpload){
+                ME.beforeUpload(fixName, function(qn){
+                    
+                    upload.field('token', qn.token)
+                        .field('key', qn.key)
+                        .onProgress(function(val){
+                            vm.uploadFile[idx].progress = val + '%'
+                        }).onEnd(function(json){
+                            vm.uploadFile[idx].url = qn.url
+                        }).start()
+                })
+            }else{
+                upload.onProgress(function(val){
+                        vm.uploadFile[idx].progress = val + '%'
+                    }).onEnd(function(json){
+                        vm.uploadFile[idx].url = json.data.url
+                    }).start()
+            }
         }
     }
 
@@ -232,7 +313,8 @@ define([
                 type: 7,
                 menubar: false,
                 shade: false,
-                offset: [offset.top + 37],
+                fixed: true,
+                offset: [offset.top + 37 - document.body.scrollTop],
                 tab: 2,
                 attach: '',
                 attachAlt: '',
@@ -264,6 +346,9 @@ define([
                 $select: yua.noop,
                 $change: yua.noop,
                 $insert: function(it){
+                    if(!it.url){
+                        return
+                    }
                     var val = (openType === 'image' ? '!' : '')
                             + '[' + it.name + '](' + it.url + ')'
                     ME.insert(vm.$editor, val)

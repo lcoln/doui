@@ -762,7 +762,8 @@ function Renderer(options) {
 }
 
 Renderer.prototype.code = function(code, lang, escaped) {
-
+    code = code.replace(/&lt;script&gt;/g, '<script>')
+            .replace(/&lt;\/script&gt;/g, '</script>')
     if (this.options.highlight) {
         var out = this.options.highlight(code, lang);
         if (out != null && out !== code) {
@@ -798,15 +799,15 @@ Renderer.prototype.code = function(code, lang, escaped) {
             }
         }
 
-        output += '<section><em class="linenum do-fn-noselect">'
+        output += /*'<section><em class="linenum do-fn-noselect">'
         + idx
         + '.</em>'
-        + '<code class="lang '
+        + */'<code class="lang '
         + lang
         + '">'
         + codes[idx - 1]
         + '\n</code>' //加\n为了避免空行时无法显示
-        + '</section>'
+        // + '</section>'
     }
 
     return '<pre class="do-ui-blockcode">'
@@ -886,6 +887,7 @@ Renderer.prototype.em = function(text) {
 };
 
 Renderer.prototype.codespan = function(txt) {
+    txt = txt.replace(/&amp;/g, '&')
     return '<code class="do-ui-inlinecode">' + txt + '</code>';
 };
 

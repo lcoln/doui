@@ -36,22 +36,24 @@
 
 .do-meditor-attach .cont-box .select-file  {width:100%;height:35px;line-height:33px}
 .do-meditor-attach .cont-box .select-file span.file  {float:left;width:100px;height:35px;border:1px solid #ddd;background:#f7f7f7;color:#666;text-align:center;cursor:pointer;}
+.do-meditor-attach .cont-box .select-file span.tips  {display:inline-block;padding:0 10px;line-height:35px;color:#666;}
 .do-meditor-attach .cont-box .upload-box  {width:100%;height:auto;min-height:190px;margin:10px 0;border:1px solid #e2e2e2;}
 .do-meditor-attach .cont-box .upload-box .tr {width:100%;height:35px;line-height:35px;text-align:center;}
 .do-meditor-attach .cont-box .upload-box .tr:hover {background:#fafafa}
 .do-meditor-attach .cont-box .upload-box .thead {line-height:34px;border-bottom:1px solid #e2e2e2;background:#f7f7f7;}
 
 .do-meditor-attach .cont-box .upload-box .td {float:left;}
-.do-meditor-attach .cont-box .upload-box .td.name {width:50%;}
-.do-meditor-attach .cont-box .upload-box .td.progress {width:20%;}
-.do-meditor-attach .cont-box .upload-box .td.option {width:30%;}
+.do-meditor-attach .cont-box .upload-box .td.name {width:45%;}
+.do-meditor-attach .cont-box .upload-box .td.progress {width:40%;}
+.do-meditor-attach .cont-box .upload-box .td.option {width:15%;}
 .do-meditor-attach .cont-box .upload-box .td.option a {display:inline-block;padding:3px 5px;line-height:13px;border:1px solid #e2e2e2;background:#f7f7f7;color:#666;}
+.do-meditor-attach .cont-box .upload-box .td .red {color:#f30;}
 
 .do-meditor-attach .cont-box .manager {overflow:hidden;overflow-y:auto;width:100%;height:320px;padding:10px;}
-.do-meditor-attach .cont-box .manager .item {float:left;width:22%;height:130px;margin:10px 1.5%;}
+.do-meditor-attach .cont-box .manager .item {float:left;width:22%;height:130px;margin:10px 1.5%;padding:5px;}
 .do-meditor-attach .cont-box .manager .item:hover {background:#f7f7f7;}
 .do-meditor-attach .cont-box .manager .thumb {display:block;width:100%;height:100px;}
-.do-meditor-attach .cont-box .manager .name {overflow:hidden;line-height:30px;text-align:center;}
+.do-meditor-attach .cont-box .manager .name {overflow:hidden;height:20px;line-height:30px;text-align:center;}
 .do-meditor-attach .cont-box .manager img {width:100%;height:100%;}
 .do-meditor-attach .cont-box .manager .attac-icon {display:inline-block;width:100%;height:100px;text-align:center;font:50px/100px "edicon" !important;-webkit-font-smoothing: antialiased;-webkit-text-stroke-width: 0.2px;-moz-osx-font-smoothing: grayscale;}
 
