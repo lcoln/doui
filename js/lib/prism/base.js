@@ -1,3 +1,10 @@
+/**
+ * 
+ * @authors yutent (yutent@doui.cc)
+ * @date    2017-08-02 21:50:34
+ * @version $Id$
+ */
+
 define(['css!./highlight'], function() {
 
     var _self = window;

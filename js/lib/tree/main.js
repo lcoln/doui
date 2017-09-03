@@ -10,7 +10,7 @@
 define(['yua', 'css!./skin/def.css'], function(){
 
     //储存版本信息
-    yua.ui.tree = '0.0.1'
+    yua.ui.tree = '0.0.2'
 
     var box = '<ul>{li}</ul>',
         ul = '<ul :class="{open: {it}.open}">{li}</ul>',
@@ -18,6 +18,7 @@ define(['yua', 'css!./skin/def.css'], function(){
             + '<em :click="$toggle({it})"></em>'
             + '<span :click="$select({it})" :class="{active: {it}.id === currItem}" :text="{it}.name"></span>'
             + '{child}</li>';
+    var keyPath = {};
 
 
     function repeat(arr, name){
@@ -44,17 +45,17 @@ define(['yua', 'css!./skin/def.css'], function(){
         })
         arr.forEach(function(it){
             tmp[it.id] = it
+            keyPath[it.id] = ''
             var parentItem = tmp[it.pid]
-            delete it.pid
             
             if(!parentItem){
                 return farr.push(tmp[it.id])
             }
+            keyPath[it.id] += keyPath[parentItem.id] + parentItem.id + ','
             parentItem.open = !!parentItem.open
             parentItem.children = parentItem.children || []
             parentItem.children.push(it)
         })
-        tmp = arr = null
         return farr
     }
 
@@ -67,12 +68,44 @@ define(['yua', 'css!./skin/def.css'], function(){
                     vm.$onClick(obj)
                 }
             }
-            vm.$update = function(arr){
+            vm.$reset = function(arr){
                 vm.treeArr.clear()
+                vm.treeHTML = ''
+
                 vm.treeArr.pushArray(format(arr))
                 vm.currItem = -1
                 var tpl = repeat(vm.treeArr.$model, 'treeArr')
-                vm.treeHTML = box.replace('{li}', tpl)
+                yua.nextTick(function(){
+                    vm.treeHTML = box.replace('{li}', tpl)
+                })
+                
+            }
+            vm.$update = function(id, obj){
+                var path = keyPath[id],
+                    tmpid = null,
+                    tmpobj = null
+
+                path += id
+                path = path.split(',')
+                
+                while(tmpid = +path.shift()){
+                    if(!tmpobj){
+                        tmpobj = vm.treeArr
+                    }else{
+                        tmpobj = tmpobj.children
+                    }
+                    
+                    for(var i = 0, it; it = tmpobj[i++];){
+                        if(it.id === tmpid){
+                            tmpobj = it
+                            break
+                        }
+                    }
+                }
+                for(var j in obj){
+                    tmpobj[j] = obj[j]
+                }
+                
             }
         },
         $ready: function(vm){
@@ -84,6 +117,7 @@ define(['yua', 'css!./skin/def.css'], function(){
         treeArr: [],
         $select: yua.noop,
         $update: yua.noop,
+        $reset: yua.noop,
         $onSuccess: yua.noop,
         $onClick: yua.noop,
         $toggle: function(obj){

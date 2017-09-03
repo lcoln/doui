@@ -1,4 +1,11 @@
-define(['./core', 'css!./highlight'], function(Prism) {
+/**
+ * 
+ * @authors yutent (yutent@doui.cc)
+ * @date    2017-08-02 21:50:34
+ * @version $Id$
+ */
+
+define(['./base', 'css!./highlight'], function(Prism) {
 
     Prism.languages.actionscript = Prism.languages.extend('javascript',  {
         'keyword': /\b(?:as|break|case|catch|class|const|default|delete|do|else|extends|finally|for|function|if|implements|import|in|instanceof|interface|internal|is|native|new|null|package|private|protected|public|return|super|switch|this|throw|try|typeof|use|var|void|while|with|dynamic|each|final|get|include|namespace|native|override|set|static)\b/,

@@ -29,7 +29,7 @@ define(['yua'], function(){
 
             //取得拖动的3种状态回调
             //按下,且拖拽之前
-            binding. beforedrag = getBindingCallback(binding.element, 'data-beforedrag', binding.vmodels)
+            binding.beforedrag = getBindingCallback(binding.element, 'data-beforedrag', binding.vmodels)
             //拖拽过程
             binding.dragging = getBindingCallback(binding.element, 'data-dragging', binding.vmodels)
             // 拖拽结束,且释放鼠标

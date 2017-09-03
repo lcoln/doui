@@ -160,10 +160,6 @@ yua.type = function (obj) { //取得目标的类型
             typeof obj
 }
 
-yua.isFunction = function (fn) {
-    return serialize.call(fn) === "[object Function]"
-}
-
 
 /*判定是否是一个朴素的javascript对象（Object），不是DOM对象，不是BOM对象，不是自定义类的实例*/
 yua.isPlainObject = function (obj) {
@@ -207,7 +203,7 @@ yua.mix = yua.fn.mix = function () {
     }
 
     //确保接受方为一个复杂的数据类型
-    if (typeof target !== "object" && !yua.isFunction(target)) {
+    if (typeof target !== "object" && yua.type(target) !== 'function') {
         target = {}
     }
 
@@ -444,7 +440,7 @@ if(!Date.prototype.format){
         {
             value: function(str){
                 str = str || 'Y-m-d H:i:s'
-                var week = ['Mon', 'Tues', 'Wed', 'Thur', 'Fri', 'Sat', 'Sun'],
+                var week = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
                     dt = {
                         'fullyear': this.getFullYear(),
                         'year': this.getYear(),
@@ -3050,7 +3046,7 @@ function scanAttr(elem, vmodels, match) {
                             uuid: "_" + (++bindingID),
                             priority: (directives[type].priority || type.charCodeAt(0) * 10) + (Number(param.replace(/\D/g, "")) || 0)
                         }
-                        if (type === "html" || type === "text") {
+                        if (type === "html" || type === "text" || type === "attr") {
 
                             var filters = getToken(value).filters
                             binding.expr = binding.expr.replace(filters, "")
@@ -3665,9 +3661,10 @@ var attrDir = yua.directive("attr", {
 //类名定义， :class="xx:yy"  :class="{xx: yy}" :class="xx" :class="{{xx}}"
 yua.directive("class", {
     init: function (binding) {
+        var expr = [];
         if(!/^\{.*\}$/.test(binding.expr)){
 
-            var expr = binding.expr.split(':')
+            expr = binding.expr.split(':')
             expr[1] = expr[1] && expr[1].trim() || 'true'
             var arr = expr[0].split(/\s+/)
             binding.expr = '{' + arr.map(function(it){
@@ -3690,16 +3687,16 @@ yua.directive("class", {
                     activate = "mousedown"
                     abandon = "mouseup"
                     var fn0 = $elem.bind("mouseleave", function () {
-                        binding.toggleClass && $elem.removeClass(binding.newClass)
+                        $elem.removeClass(expr[0])
                     })
                 }
             }
 
             var fn1 = $elem.bind(activate, function () {
-                binding.toggleClass && $elem.addClass(binding.newClass)
+                $elem.addClass(expr[0])
             })
             var fn2 = $elem.bind(abandon, function () {
-                binding.toggleClass && $elem.removeClass(binding.newClass)
+                $elem.removeClass(expr[0])
             })
             binding.rollback = function () {
                 $elem.unbind("mouseleave", fn0)
@@ -3711,6 +3708,9 @@ yua.directive("class", {
 
     },
     update: function (val) {
+        if(this.type !== 'class'){
+            return
+        }
         var obj = val
         if(!obj || this.param)
             return log('class指令语法错误 %c %s="%s"', 'color:#f00', this.name, this.expr)
@@ -4997,8 +4997,8 @@ yua.directive("repeat", {
             elem.removeAttribute(binding.name)
             effectBinding(elem, binding)
             binding.param = binding.param || "el"
-            binding.sortedCallback = getBindingCallback(elem, "data-with-sorted", binding.vmodels)
-            var rendered = getBindingCallback(elem, "data-" + type + "-rendered", binding.vmodels)
+            binding.sortedCallback = getBindingCallback(elem, "data-repeat-sortby", binding.vmodels)
+            var rendered = getBindingCallback(elem, "data-repeat-rendered", binding.vmodels)
 
             var signature = generateID(type)
             var start = DOC.createComment(signature + ":start")
@@ -5006,19 +5006,12 @@ yua.directive("repeat", {
             binding.signature = signature
             binding.start = start
             binding.template = yuaFragment.cloneNode(false)
-            if (type === "repeat") {
-                var parent = elem.parentNode
-                parent.replaceChild(end, elem)
-                parent.insertBefore(start, end)
-                binding.template.appendChild(elem)
-            } else {
-                while (elem.firstChild) {
-                    binding.template.appendChild(elem.firstChild)
-                }
-                elem.appendChild(start)
-                elem.appendChild(end)
-                parent = elem
-            }
+            
+            var parent = elem.parentNode
+            parent.replaceChild(end, elem)
+            parent.insertBefore(start, end)
+            binding.template.appendChild(elem)
+            
             binding.element = end
 
             if (rendered) {

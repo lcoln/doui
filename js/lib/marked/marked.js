@@ -810,7 +810,7 @@ Renderer.prototype.code = function(code, lang, escaped) {
         // + '</section>'
     }
 
-    return '<pre class="do-ui-blockcode">'
+    return '<pre :skip class="do-ui-blockcode">'
         + output
         + '</pre>';
 };
@@ -888,7 +888,7 @@ Renderer.prototype.em = function(text) {
 
 Renderer.prototype.codespan = function(txt) {
     txt = txt.replace(/&amp;/g, '&')
-    return '<code class="do-ui-inlinecode">' + txt + '</code>';
+    return '<code :skip class="do-ui-inlinecode">' + txt + '</code>';
 };
 
 Renderer.prototype.br = function() {
