@@ -8,7 +8,7 @@
 "use strict";
 
 
-define(['yua', 'lib/drag', 'css!./skin/def'], function(yua){
+define(['yua', 'lib/drag/main', 'css!./skin/def'], function(yua){
 
     if(window.layer){
         return window.layer

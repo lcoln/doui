@@ -16,32 +16,61 @@ $cgr: #34495e #5d6d7e #2c3e50;
 @mixin ts($c: all, $t: .1s, $m: ease-in-out){
     transition:$c $t $m;
 }
-/*--------各种按钮---------*/
-.do-ui-button {display:inline-block;padding:0 5px;text-align:center;font-size:12px;@include ts;
 
-    &.medium {min-width:100px;height:35px;line-height:35px;font-size:15px}
-    &.large {min-width:150px;height:50px;line-height:50px;font-size:18px;}
+
+/*--------各种按钮---------*/
+.do-ui-button {display:inline-block;padding:0 5px;border:1px solid #ddd;text-align:center;font-size:12px;background:none;cursor:pointer;@include ts;
+
+    &.medium {min-width:100px;height:35px;padding:0 8px;line-height:35px;font-size:15px}
+    &.large {min-width:150px;height:50px;padding:0 13px;line-height:50px;font-size:18px;}
     &.radius-3 {border-radius:3px;}
     &.radius-5 {border-radius:5px;}
 
-    &.green {background:nth($cg, 1);color:#fff;}
+    &.green {border:0;background:nth($cg, 1);color:#fff;}
     &.green:hover {background:nth($cg, 2);}
     &.green:active {background:nth($cg, 3);}
-    &.blue {background:nth($cb, 1);color:#fff;}
+    &.blue {border:0;background:nth($cb, 1);color:#fff;}
     &.blue:hover {background:nth($cb, 2);}
     &.blue:active {background:nth($cb, 3);}
-    &.red {background:nth($cr, 1);color:#fff;}
+    &.red {border:0;background:nth($cr, 1);color:#fff;}
     &.red:hover {background:nth($cr, 2);}
     &.red:active {background:nth($cr, 3);}
-    &.orange {background:nth($co, 1);color:#fff;}
+    &.orange {border:0;background:nth($co, 1);color:#fff;}
     &.orange:hover {background:nth($co, 2);}
     &.orange:active {background:nth($co, 3);}
-    &.plain {background:nth($cp, 1);color:nth($cgr, 1);}
+    &.plain {border:0;background:nth($cp, 1);color:nth($cgr, 1);}
     &.plain:hover {background:nth($cp, 2);}
     &.plain:active {background:nth($cp, 3);}
-    &.grey {background:nth($cgr, 1);color:#fff;}
+    &.grey {border:0;background:nth($cgr, 1);color:#fff;}
     &.grey:hover {background:nth($cgr, 2);}
     &.grey:active {background:nth($cgr, 3);}
+
+    &.disabled {border-color:nth($cp, 1);color:nth($cp, 3);cursor:not-allowed;}
+    
+    /* 额外样式 */
+    &.medium.with-style,
+    &.large.with-style {position:relative;padding-right:43px;
+
+        &::after {position:absolute;right:0;top:0;width:35px;;text-align:center;background:rgba(0,0,0,.2);font-family:"ui font" !important;-webkit-font-smoothing: antialiased;-moz-osx-font-smoothing: grayscale;}
+    }
+    &.large.with-style {padding-right:58px;
+        &::after {width:50px;}
+    }
+
+    &.icon-del::after {content:"\e6f0"}
+    &.icon-add::after {content:"\e64c"}
+    &.icon-send::after {content:"\e64b"}
+    &.icon-bad::after {content:"\e8ee"}
+    &.icon-good::after {content:"\e62d"}
+    &.icon-download::after {content:"\e611"}
+    &.icon-upload::after {content:"\e6f7"}
+    &.icon-mac::after {content:"\e60a"}
+    &.icon-ios::after {content:"\e609"}
+    &.icon-windows::after {content:"\e601"}
+    &.icon-linux::after {content:"\e602"}
+    &.icon-android::after {content:"\e600"}
+
+    
 }
 
 
@@ -60,13 +89,14 @@ $cgr: #34495e #5d6d7e #2c3e50;
     &:focus {border-color:nth($cg, 1);}
     &.alert {border-color:nth($cr, 1);color:nth($cr, 1)}
     &.disabled {border-color:transparent;background:nth($cp, 1);color:nth($cp, 3)}
-
+    
+    &.area {padding:5px;}
 }
 
 
+/* select框 */
+.do-ui-select {display:inline-block;min-height:30px;padding:0 25px 0 5px;border:1px solid nth($cp, 3);background:#fff url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAQCAMAAADOBMQXAAAAFVBMVEUAAAD///8wMDAwMDAyMjIzMzMyMjLeZPLMAAAAB3RSTlMAABAwkLDARx1RgwAAAD9JREFUeAGlz0UChFAAgFB+3v/GMwZ2K8u3g7DXI40s6zWnuaXaK7IYVVlElUV14lQik8opw6SyiCqLXB9/0D/ZNQE+FhzMpgAAAABJRU5ErkJggg==) no-repeat right 6px;color:nth($cgr, 1);outline:none;-webkit-appearance:none;-moz-appearance: none;@include ts;
 
-.do-ui-select {display:inline-block;min-height:30px;padding:0 5px;border:1px solid nth($cp, 3);background:#fff;color:nth($cgr, 1);outline:none;-moz-appearance: none;@include ts;
-    
     &::-ms-expand {display:none;}
     &.radius-3 {border-radius:3px;}
     &.radius-5 {border-radius:5px;}
@@ -76,23 +106,49 @@ $cgr: #34495e #5d6d7e #2c3e50;
     &.disabled {border-color:transparent;background:nth($cp, 1);color:nth($cp, 3)}
 }
 
-
+/* 单选和复选框 */
 .do-ui-radio,
-.do-ui-checkbox {display:inline-block;position:relative;width:auto;height:auto;min-height:30px;padding-left:50px;background:#fff;
-    
-    >input {position:absolute;left:25px;top:5px;width:20px;height:20px;outline:none;-webkit-appearance:none;background:#fff;border:2px solid nth($cg, 1);border-radius:3px;
+.do-ui-checkbox {display:inline-block;position:relative;width:auto;height:auto;min-height:30px;padding-left:35px;line-height:30px;border-radius:3px;text-align:center;
+}
+.do-ui-radio {padding-left:50px;
+
+    >input {position:absolute;left:10px;top:10px;width:35px;height:10px;border-radius:10px;border:0;background:nth($cp, 3);-webkit-appearance:none;-moz-appearance:none;
         
-        &:checked {background:nth($cg, 1);}
+        &:checked {background:nth($cg, 2);}
+        &:disabled {background:#fff;}
+
+        &::after {position:absolute;display:block;left:-2px;top:-5px;width:20px;height:20px;border-radius:50%;content:"";background:nth($cp, 2);box-shadow:0 1px 2px rgba(0,0,0,.2);}
+        &:checked::after {left:auto;right:-2px;background:nth($cg, 3);}
     }
 }
 .do-ui-checkbox {
-    >input:checked {box-shadow:inset 0 0 0 2px #fff;}
+    >input {position:absolute;left:2px;top:2px;width:26px;height:26px;line-height:22px;border:2px solid nth($cp, 3);color:nth($cgr, 2);border-radius:3px;text-align:center;font-size:18px;font-family:"ui font" !important;-webkit-font-smoothing: antialiased;-moz-osx-font-smoothing: grayscale;-webkit-appearance:none;-moz-appearance:none;
+
+        &:checked::after {content:"\e60f";}
+        &:disabled {border-color:nth($cp, 3);color:nth($cp, 3);}
+    }
+    &.green >input {color:nth($cg, 1)!important;border-color:nth($cg, 1)}
+    &.blue >input {color:nth($cb, 1)!important;border-color:nth($cb, 1)}
+    &.red >input {color:nth($cr, 1)!important;border-color:nth($cr, 1)}
+    &.orange >input {color:nth($co, 1)!important;border-color:nth($co, 1)}
+    &.grey >input {color:nth($cgr, 1)!important;border-color:nth($cgr, 1)}
+
+    &.disabled {color:nth($cp, 3);}
 }
-.do-ui-radio {
-    >input {left:10px;width:35px;border-radius:10px;border-color:nth($cp, 3);background:nth($cp, 3);
+.do-ui-checkbox {
+    &.with-style {padding-left:5px;padding-right:35px;line-height:26px;border:2px solid nth($cp, 1);background:nth($cp, 1);color:nth($cgr, 1);
+
+        >input {left:auto;right:0;top:0;line-height:26px;border:0;background:#fff;color:nth($cgr, 2);
+            &:disabled {color:nth($cp, 3)!important;}
+        }
         
-        &::after {float:left;display:block;width:16px;height:16px;border-radius:50%;content:"";background:#fff;}
-        &:checked {border-color:nth($cg, 1);}
-        &:checked::after {float: right;}
+        &.green {border-color:nth($cg, 1);background:nth($cg, 1);color:#fff;}
+        &.blue {border-color:nth($cb, 1);background:nth($cb, 1);color:#fff;}
+        &.red {border-color:nth($cr, 1);background:nth($cr, 1);color:#fff;}
+        &.orange {border-color:nth($co, 1);background:nth($co, 1);color:#fff;}
+        &.grey {border-color:nth($cgr, 1);background:nth($cgr, 1);color:#fff;}
+
+        &.disabled {border-color:nth($cp, 1);background:nth($cp, 1);color:nth($cp, 3);}
     }
 }
+
