@@ -108,21 +108,39 @@ $cgr: #34495e #5d6d7e #2c3e50;
 
 /* 单选和复选框 */
 .do-ui-radio,
-.do-ui-checkbox {display:inline-block;position:relative;width:auto;height:auto;min-height:30px;padding-left:35px;line-height:30px;border-radius:3px;text-align:center;
+.do-ui-checkbox {display:inline-block;position:relative;width:auto;height:auto;min-height:30px;padding-left:35px;line-height:30px;border-radius:3px;text-align:center;color:nth($cgr, 1);
 }
 .do-ui-radio {padding-left:50px;
 
     >input {position:absolute;left:10px;top:10px;width:35px;height:10px;border-radius:10px;border:0;background:nth($cp, 3);-webkit-appearance:none;-moz-appearance:none;
         
-        &:checked {background:nth($cg, 2);}
-        &:disabled {background:#fff;}
+        &:checked {background:nth($cp, 3);}
+        &:disabled {background:nth($cp, 2);}
+        &:disabled:checked {background:nth($cp, 3);}
 
         &::after {position:absolute;display:block;left:-2px;top:-5px;width:20px;height:20px;border-radius:50%;content:"";background:nth($cp, 2);box-shadow:0 1px 2px rgba(0,0,0,.2);}
-        &:checked::after {left:auto;right:-2px;background:nth($cg, 3);}
+        &:checked::after {left:auto;right:-2px;background:nth($cgr, 2);}
+        &:checked:disabled::after {background:nth($cp, 3);}
     }
+    &.green >input:checked {background:nth($cg, 2);
+        &::after {background:nth($cg, 3);}
+    }
+    &.blue >input:checked {background:nth($cb, 2);
+        &::after {background:nth($cb, 3);}
+    }
+    &.red >input:checked {background:nth($cr, 2);
+        &::after {background:nth($cr, 3);}
+    }
+    &.orange >input:checked {background:nth($co, 2);
+        &::after {background:nth($co, 3);}
+    }
+    &.grey >input:checked {background:nth($cgr, 2);
+        &::after {background:nth($cgr, 3);}
+    }
+    &.disabled {color:nth($cp, 3);}
 }
 .do-ui-checkbox {
-    >input {position:absolute;left:2px;top:2px;width:26px;height:26px;line-height:22px;border:2px solid nth($cp, 3);color:nth($cgr, 2);border-radius:3px;text-align:center;font-size:18px;font-family:"ui font" !important;-webkit-font-smoothing: antialiased;-moz-osx-font-smoothing: grayscale;-webkit-appearance:none;-moz-appearance:none;
+    >input {position:absolute;left:2px;top:2px;width:26px;height:26px;line-height:22px;border:2px solid nth($cp, 3);border-radius:3px;text-align:center;font-size:18px;font-family:"ui font" !important;-webkit-font-smoothing: antialiased;-moz-osx-font-smoothing: grayscale;-webkit-appearance:none;-moz-appearance:none;
 
         &:checked::after {content:"\e60f";}
         &:disabled {border-color:nth($cp, 3);color:nth($cp, 3);}
@@ -136,7 +154,7 @@ $cgr: #34495e #5d6d7e #2c3e50;
     &.disabled {color:nth($cp, 3);}
 }
 .do-ui-checkbox {
-    &.with-style {padding-left:5px;padding-right:35px;line-height:26px;border:2px solid nth($cp, 1);background:nth($cp, 1);color:nth($cgr, 1);
+    &.with-style {padding-left:5px;padding-right:35px;line-height:26px;border:2px solid nth($cp, 1);background:nth($cp, 1);
 
         >input {left:auto;right:0;top:0;line-height:26px;border:0;background:#fff;color:nth($cgr, 2);
             &:disabled {color:nth($cp, 3)!important;}
@@ -152,3 +170,18 @@ $cgr: #34495e #5d6d7e #2c3e50;
     }
 }
 
+/* 引用文本 */
+.do-ui-quote {position:relative;min-height:60px;margin:10px 0;padding:15px 5px 5px 50px;border:1px solid #ddd;border-radius:10px;background:#f7f7f7;
+
+    &::before {position:absolute;left:8px;top:0;font:30px/1.5 "ui font";color:nth($cp, 3);content:"\e61b";}
+}
+
+/* 提醒文本 */
+.do-ui-warn,.do-ui-notice {position:relative;min-height:50px;margin:10px 0;padding:8px 8px 8px 50px;border:1px solid nth($co, 1);border-radius:10px;background:#fffbed;color:nth($co, 3);
+
+    &::before {position:absolute;left:8px;top:0;font:30px/1.5 "ui font";color:nth($cr, 1);content:"\e6f6";}
+}
+.do-ui-notice {border-color:nth($cg, 2);color:nth($cg, 3);background:#edfbf8;
+
+    &::before {color:nth($cg, 3);content:"\e657";}
+}
