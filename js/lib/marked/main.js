@@ -19,6 +19,8 @@ var block = {
     nptable: noop,
     lheading: /^([^\n]+)\n *(=|-){2,} *(?:\n+|$)/,
     blockquote: /^( *>[^\n]+(\n(?!def)[^\n]+)*\n*)+/,
+    mark: /^( *;;;([\!]?)[^\n]+(\n(?!def)[^\n]+)*\n*)+/,
+    task: /^ *- *\[([ x]?)\] *([^\n]*)/,
     list: /^( *)(bull) [\s\S]+?(?:hr|def|\n{2,}(?! )(?!\1bull )\n*|\s*$)/,
     html: /^ *(?:comment *(?:\n|\s*$)|closed *(?:\n{2,}|\s*$)|closing *(?:\n{2,}|\s*$))/,
     def: /^ *\[([^\]]+)\]: *<?([^\s>]+)>?(?: +["(]([^\n]+)[")])? *(?:\n+|$)/,
@@ -42,6 +44,9 @@ block.list = replace(block.list)
 block.blockquote = replace(block.blockquote)
     ('def', block.def)
     ();
+block.mark = replace(block.mark)
+('def', block.def)
+();
 
 block._tag = '(?!(?:'
     + 'a|em|strong|small|s|cite|q|dfn|abbr|data|time|code'
@@ -274,6 +279,38 @@ Lexer.prototype.token = function(src, top, bq) {
 
             this.tokens.push({
                 type: 'blockquote_end'
+            });
+
+            continue;
+        }
+
+        // mark
+        if (cap = this.rules.mark.exec(src)) {
+            src = src.substring(cap[0].length);
+
+            this.tokens.push({
+                type: 'mark_start'
+            });
+            var sign = cap[2] === '!'
+            cap = cap[0].replace(/^ *;;;[\!]? ?/gm, '');
+
+            this.token(cap, top, true);
+
+            this.tokens.push({
+                type: 'mark_end',
+                mark: sign
+            });
+
+            continue;
+        }
+
+        if (cap = this.rules.task.exec(src)) {
+            src = src.substring(cap[0].length);
+
+            this.tokens.push({
+                type: 'task',
+                mark: cap[1] === 'x',
+                text: cap[2]
             });
 
             continue;
@@ -799,15 +836,11 @@ Renderer.prototype.code = function(code, lang, escaped) {
             }
         }
 
-        output += /*'<section><em class="linenum do-fn-noselect">'
-        + idx
-        + '.</em>'
-        + */'<code class="lang '
-        + lang
-        + '">'
-        + codes[idx - 1]
-        + '\n</code>' //加\n为了避免空行时无法显示
-        // + '</section>'
+        output += '<code class="lang '
+            + lang
+            + '">'
+            + codes[idx - 1]
+            + '\n</code>' //加\n为了避免空行时无法显示
     }
 
     return '<pre :skip class="do-ui-blockcode">'
@@ -817,6 +850,14 @@ Renderer.prototype.code = function(code, lang, escaped) {
 
 Renderer.prototype.blockquote = function(quote) {
     return '<blockquote>\n' + quote + '</blockquote>\n';
+};
+Renderer.prototype.mark = function(mark, t) {
+    return '<mark class="' + (t ? 'do-ui-mark' : 'do-ui-warn') + '">\n' + mark + '</mark>\n';
+};
+
+Renderer.prototype.task = function(task, t) {
+    task = t ? ('<del>' + task + '</del>') : task
+    return '<section><label class="do-ui-checkbox"><input type="checkbox" ' + (t ? 'checked' : '') + ' disabled />' + task + '</label></section>\n';
 };
 
 Renderer.prototype.html = function(html) {
@@ -1077,6 +1118,18 @@ Parser.prototype.tok = function() {
             }
 
             return this.renderer.blockquote(body);
+        }
+        case 'mark_start': {
+            var body = '';
+
+            while (this.next().type !== 'mark_end') {
+                body += this.tok();
+            }
+            return this.renderer.mark(body, this.token.mark);
+        }
+        case 'task': {
+            log(this.token)
+            return this.renderer.task(this.token.text, this.token.mark)
         }
         case 'list_start': {
             var body = ''

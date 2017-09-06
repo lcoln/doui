@@ -108,7 +108,7 @@ $cgr: #34495e #5d6d7e #2c3e50;
 
 /* 单选和复选框 */
 .do-ui-radio,
-.do-ui-checkbox {display:inline-block;position:relative;width:auto;height:auto;min-height:30px;padding-left:35px;line-height:30px;border-radius:3px;text-align:center;color:nth($cgr, 1);
+.do-ui-checkbox {display:inline-block;position:relative;width:auto;height:auto;min-height:30px;padding-left:35px;line-height:30px;border-radius:3px;color:nth($cgr, 1);
 }
 .do-ui-radio {padding-left:50px;
 
@@ -154,7 +154,7 @@ $cgr: #34495e #5d6d7e #2c3e50;
     &.disabled {color:nth($cp, 3);}
 }
 .do-ui-checkbox {
-    &.with-style {padding-left:5px;padding-right:35px;line-height:26px;border:2px solid nth($cp, 1);background:nth($cp, 1);
+    &.with-style {padding-left:5px;padding-right:35px;line-height:26px;border:2px solid nth($cp, 1);background:nth($cp, 1);text-align:center;
 
         >input {left:auto;right:0;top:0;line-height:26px;border:0;background:#fff;color:nth($cgr, 2);
             &:disabled {color:nth($cp, 3)!important;}
@@ -177,11 +177,11 @@ $cgr: #34495e #5d6d7e #2c3e50;
 }
 
 /* 提醒文本 */
-.do-ui-warn,.do-ui-notice {position:relative;min-height:50px;margin:10px 0;padding:8px 8px 8px 50px;border:1px solid nth($co, 1);border-radius:10px;background:#fffbed;color:nth($co, 3);
+.do-ui-warn,.do-ui-mark {display:inline-block;position:relative;min-height:50px;margin:10px 0;padding:8px 8px 8px 50px;border:1px solid nth($co, 1);border-radius:10px;background:#fffbed;color:nth($co, 3);
 
     &::before {position:absolute;left:8px;top:0;font:30px/1.5 "ui font";color:nth($cr, 1);content:"\e6f6";}
 }
-.do-ui-notice {border-color:nth($cg, 2);color:nth($cg, 3);background:#edfbf8;
+.do-ui-mark {border-color:nth($cg, 2);color:nth($cg, 3);background:#edfbf8;
 
     &::before {color:nth($cg, 3);content:"\e657";}
 }
