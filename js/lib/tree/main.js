@@ -7,10 +7,10 @@
 
 "use strict";
 
-define(['yua', 'css!./skin/def.css'], function(){
+define(['css!./main.css'], function(){
 
     //储存版本信息
-    yua.ui.tree = '0.0.2'
+    yua.ui.tree = '1.0.0'
 
     var box = '<ul>{li}</ul>',
         ul = '<ul :class="{open: {it}.open}">{li}</ul>',
