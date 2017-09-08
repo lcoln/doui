@@ -852,7 +852,7 @@ Renderer.prototype.blockquote = function(quote) {
     return '<blockquote>\n' + quote + '</blockquote>\n';
 };
 Renderer.prototype.mark = function(mark, t) {
-    return '<mark class="' + (t ? 'do-ui-mark' : 'do-ui-warn') + '">\n' + mark + '</mark>\n';
+    return '<mark class="' + (t ? 'do-ui-warn' : 'do-ui-mark') + '">\n' + mark + '</mark>\n';
 };
 
 Renderer.prototype.task = function(task, t) {

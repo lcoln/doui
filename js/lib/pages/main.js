@@ -1,7 +1,7 @@
 "use strict";
 define(["yua","text!./main.htm", "css!./main"], function(yua, tpl) {
 
-    yua.ui.pages = '0.0.1'
+    yua.ui.pages = '1.0.0'
     var colors = {plain: 1, green: 1, blue: 1, red: 1, orange: 1, grey: 1},
         themes = ['skin-1 ', 'skin-2 '];
     //计算页码列表

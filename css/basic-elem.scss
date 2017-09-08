@@ -6,16 +6,7 @@
  * @version $Id$
  */
 
-$cg: #1abc9c #48c9b0 #16a085;
-$cb: #3498db #5dade2 #2c81ba;
-$cr: #e74c3c #ec7063 #c54133;
-$co: #f39c12 #f1c40f #e67e22;
-$cp: #e7e8eb #ecf0f1 #bdc3c7;
-$cgr: #34495e #5d6d7e #2c3e50;
-
-@mixin ts($c: all, $t: .1s, $m: ease-in-out){
-    transition:$c $t $m;
-}
+@import "var.scss";
 
 
 /*--------各种按钮---------*/
@@ -60,6 +51,8 @@ $cgr: #34495e #5d6d7e #2c3e50;
     &.icon-del::after {content:"\e6f0"}
     &.icon-add::after {content:"\e64c"}
     &.icon-send::after {content:"\e64b"}
+    &.icon-confirm::after {content:"\e60f"}
+    &.icon-share::after {content:"\e631"}
     &.icon-bad::after {content:"\e8ee"}
     &.icon-good::after {content:"\e62d"}
     &.icon-download::after {content:"\e611"}
@@ -79,18 +72,33 @@ $cgr: #34495e #5d6d7e #2c3e50;
 /*--------各种input---------*/
 
 
-.do-ui-input {display:inline-block;min-height:30px;padding:0 5px;border:1px solid nth($cp, 3);background:#fff;color:nth($cgr, 1);outline:none;@include ts;
-
+.do-ui-input {position:relative;min-height:30px;padding:0 5px;border:1px solid nth($cp, 3);background:#fff;color:nth($cgr, 1);outline:none;@include ts;
+    
     &::-webkit-input-placeholder {color:nth($cp, 3);}
+    
+    &.area {padding:5px;}
 
     &.radius-3 {border-radius:3px;}
     &.radius-5 {border-radius:5px;}
     
-    &:focus {border-color:nth($cg, 1);}
-    &.alert {border-color:nth($cr, 1);color:nth($cr, 1)}
+    &:focus,&:hover {border-color:nth($cg, 1);color:nth($cg, 1);}
+    &.alert {border-color:nth($cr, 1);color:nth($cr, 1);
+        input {color:nth($cr, 1);}
+    }
     &.disabled {border-color:transparent;background:nth($cp, 1);color:nth($cp, 3)}
     
-    &.area {padding:5px;}
+    &.with-style {display:inline-block;padding:0;
+
+        input {width:100%;height:100%;min-height:30px;padding:0 30px 0 5px;border: 0;background:transparent;}
+
+        &::after {position:absolute;right:0;top:0;width:35px;height:30px;line-height:30px;text-align:center;font-family:"ui font" !important;-webkit-font-smoothing: antialiased;-moz-osx-font-smoothing: grayscale;}
+
+        &.icon-user::after {content:"\e6f4"}
+        &.icon-pwd::after {content:"\e655"}
+        &.icon-mail::after {content:"\e66e"}
+        &.icon-date::after {content:"\e650"}
+        &.icon-phone::after {content:"\e651"}
+    }
 }
 
 
@@ -171,14 +179,15 @@ $cgr: #34495e #5d6d7e #2c3e50;
 }
 
 /* 引用文本 */
-.do-ui-quote {position:relative;min-height:60px;margin:10px 0;padding:15px 5px 5px 50px;border:1px solid #ddd;border-radius:10px;background:#f7f7f7;
+.do-ui-quote {display:block;position:relative;min-height:60px;margin:10px 0;padding:15px 5px 5px 50px;border:1px solid #ddd;border-radius:10px;background:#f7f7f7;
 
     &::before {position:absolute;left:8px;top:0;font:30px/1.5 "ui font";color:nth($cp, 3);content:"\e61b";}
 }
 
 /* 提醒文本 */
 .do-ui-warn,.do-ui-mark {display:inline-block;position:relative;min-height:50px;margin:10px 0;padding:8px 8px 8px 50px;border:1px solid nth($co, 1);border-radius:10px;background:#fffbed;color:nth($co, 3);
-
+    
+    p {margin:0!important;}
     &::before {position:absolute;left:8px;top:0;font:30px/1.5 "ui font";color:nth($cr, 1);content:"\e6f6";}
 }
 .do-ui-mark {border-color:nth($cg, 2);color:nth($cg, 3);background:#edfbf8;

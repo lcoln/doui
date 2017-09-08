@@ -10,8 +10,8 @@
 var log = console.log;
 define([
     'yua',
-    'lib/prism/main',
-    'lib/marked',
+    'lib/prism/base',
+    'lib/marked/main',
     'css!./skin/main',
 ], function(yua){
 
