@@ -9,7 +9,7 @@
 ### demo:
 
 ```javascript
-require(['./md5'], function(SparkMD5){
+require(['./md5/main'], function(SparkMD5){
     var Spark = new SparkMD5()
     var md5 = function(cont){
             return Spark.sign.call(Spark, cont)

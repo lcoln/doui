@@ -1128,7 +1128,6 @@ Parser.prototype.tok = function() {
             return this.renderer.mark(body, this.token.mark);
         }
         case 'task': {
-            log(this.token)
             return this.renderer.task(this.token.text, this.token.mark)
         }
         case 'list_start': {
@@ -1333,6 +1332,7 @@ marked.setOptions = function(opt) {
     merge(marked.defaults, opt);
     return marked;
 };
+if (window.yua) {yua.ui.marked = '1.0.0'}
 
 marked.defaults = {
     gfm: true,
