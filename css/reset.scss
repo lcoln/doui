@@ -42,7 +42,7 @@ a:focus,input,button:focus,input:focus {outline:none;}
 
 .do-ui-font {display:inline-block;font-family:"ui font" !important;font-style:normal;-webkit-font-smoothing: antialiased;-moz-osx-font-smoothing: grayscale;}
 .do-fn-cl { *zoom: 1; }
-.do-fn-cl:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; overflow:hidden;} 
+.do-fn-cl::after { content: "."; display: block; height: 0; clear: both; visibility: hidden; overflow:hidden;} 
 .do-fn-clear {clear:both;display:inline;}
 
 .do-fn-show{display:block;}

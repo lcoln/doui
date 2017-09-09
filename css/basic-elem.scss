@@ -179,13 +179,13 @@
 }
 
 /* 引用文本 */
-.do-ui-quote {display:block;position:relative;min-height:60px;margin:10px 0;padding:15px 5px 5px 50px;border:1px solid #ddd;border-radius:10px;background:#f7f7f7;
+.do-ui-quote {display:block;position:relative;min-height:60px;margin:10px 0;padding:15px 5px 5px 50px;border:1px solid #ddd;border-radius:10px;background:#f7f7f7;word-break: break-all;
 
     &::before {position:absolute;left:8px;top:0;font:30px/1.5 "ui font";color:nth($cp, 3);content:"\e61b";}
 }
 
 /* 提醒文本 */
-.do-ui-warn,.do-ui-mark {display:inline-block;position:relative;min-height:50px;margin:10px 0;padding:8px 8px 8px 50px;border:1px solid nth($co, 1);border-radius:10px;background:#fffbed;color:nth($co, 3);
+.do-ui-warn,.do-ui-mark {display:inline-block;position:relative;min-height:50px;margin:10px 0;padding:8px 8px 8px 50px;border:1px solid nth($co, 1);border-radius:10px;background:#fffbed;color:nth($co, 3);word-break: break-all;
     
     p {margin:0!important;}
     &::before {position:absolute;left:8px;top:0;font:30px/1.5 "ui font";color:nth($cr, 1);content:"\e6f6";}
