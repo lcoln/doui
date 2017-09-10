@@ -1178,7 +1178,7 @@ function $emit(key, args) {
             var path = p + "." + key;
             arr = path.split(".");
 
-            args = args.concat([path, key])
+            args = args && args.concat([path, key]) || [path, key]
 
             if (arr.indexOf("*") === -1) {
                 $emit.call(parent, path, args)//以确切的值往上冒泡
