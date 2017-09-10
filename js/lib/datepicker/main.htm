@@ -14,13 +14,13 @@
         <dd class="contrl">
             <a href="javascript:;"
                 :click="$turn(1, -1)"
-                :text="btns.prevYear"></a>
+                :text="$prevYear"></a>
             <a href="javascript:;" class="prev-month"
-                :click="$turn(0, -1)" :text="btns.prevMonth"></a>
+                :click="$turn(0, -1)" :text="$prevMonth"></a>
             <a href="javascript:;" class="next-month"
-                :click="$turn(0, 1)" :text="btns.nextMonth"></a>
+                :click="$turn(0, 1)" :text="$nextMonth"></a>
             <a href="javascript:;" class="next-year"
-                :click="$turn(1, 1)" :text="btns.nextYear"></a>
+                :click="$turn(1, 1)" :text="$nextYear"></a>
             <span :text="calendar.year + '-' + calendar.month"></span>
         </dd>
         <dd class="calendar">

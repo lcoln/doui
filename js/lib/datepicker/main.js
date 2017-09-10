@@ -82,7 +82,7 @@ define([
                 opts.calendar.maxMonth = opts.maxDate.format('m')
                 opts.calendar.maxDay = opts.maxDate.format('d')
             }
-            log(opts)
+
             //移除部分属性
             delete opts.minDate;
             delete opts.maxDate;
@@ -220,12 +220,10 @@ define([
         tips: '',
         format: '', // 日期显示格式
         value: '', // 用于显示在输入框里的日期变量
-        btns: { //切换年份/月份的按钮上的字符
-            prevYear: '<<',
-            nextYear: '>>',
-            prevMonth: '<',
-            nextMonth: '>'
-        },
+        $prevYear: '<<',
+        $nextYear: '>>',
+        $prevMonth: '<',
+        $nextMonth: '>',
         $focus: yua.noop,
         $turn: yua.noop,
         $getDate: yua.noop,
@@ -345,7 +343,10 @@ define([
 
     //更新时间
     function updateTime(vm, last){
-        var hour = minute = second = 0;
+        var hour = 0,
+            minute = 0,
+            second = 0;
+
         last = {
             year: +vm.calendar.year,
             month: +vm.calendar.month,
