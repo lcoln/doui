@@ -19,7 +19,7 @@ define(['yua'], function(){
             }
         }
     }
-    yua.ui.drag = '0.0.1'
+    yua.ui.drag = '1.0.0'
     // 元素拖动
     yua.directive('drag', {
         priority: 1500,
@@ -82,7 +82,7 @@ define(['yua'], function(){
             }
 
 
-            var dx,dy,mx,my,ox,oy,tw,th,ww,wh,bst,bsl;
+            var dx,dy,mx,my,ox,oy,fox,foy,tw,th,ww,wh,bst,bsl;
             $drag.bind('mousedown', function(ev){
                 var gcs = getComputedStyle(target),
                     cst = gcs.transform.replace(/matrix\((.*)\)/, '$1'),
@@ -148,8 +148,8 @@ define(['yua'], function(){
                         }
                         
                         
-                        var fox = ox + cst[4], //修正的offset
-                            foy = oy + cst[5]; //修正的offset
+                        fox = ox + cst[4], //修正的offset
+                        foy = oy + cst[5]; //修正的offset
 
 
                         //如果不允许溢出可视区

@@ -35,9 +35,9 @@
 <script src="/js/yua.js"></script>
 <script>
         
-    require(['tool/drag/drag.min'], function(){
+    require(['lib/drag/main'], function(){
 
-        yua.define({
+        yua({
             $id: 'test'
         })
         yua.scan()
@@ -67,12 +67,12 @@
     <div class="handle" :drag="box"></div>
 </div>
 
-<script src="/js/yua.js"></script>
+
 <script>
         
-    require(['tool/drag/drag.min'], function(){
+    require(['lib/drag/main'], function(){
 
-        yua.define({
+        yua({
             $id: 'test'
         })
         yua.scan()
