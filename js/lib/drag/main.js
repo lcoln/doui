@@ -118,7 +118,10 @@ define(['yua'], function(){
 
                 //拖拽前回调
                 if(_this.beforedrag){
-                    _this.beforedrag.call(_this.vmodels, target, ox, oy)
+                    var result = _this.beforedrag.call(_this.vmodels, target, ox, oy)
+                    if(result === false){
+                        return
+                    }
                 }
 
                 //限制区域, 4个值依次是: 上, 下, 左, 右
