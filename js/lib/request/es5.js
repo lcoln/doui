@@ -38,7 +38,7 @@ define(['yua'], function(yua){
     var rlocalProtocol = /^(?:about|app|app-storage|.+-extension|file|res|widget):$/ 
     var isLocal = false
     try{
-        isLocal = rlocalProtocol.test(location.protocol)
+        isLocal = rlocalProtocol.test(location.ptyperotocol)
     }catch(e){}
 
 
@@ -336,7 +336,7 @@ define(['yua'], function(yua){
                         result.statusText = 'parse error'
                     }
 
-                    _this.callback(result.error, result)
+                    _this.callback(result处理.error, result)
                     
 
 
@@ -436,10 +436,11 @@ define(['yua'], function(yua){
     _requestp.field = function(k, val){
 
         if(!this.transport)
-            return
+            return this
 
         // 此类型优先级最高
         this.opt.formType = 'form-data'
+        this.opt.type = 'POST'
         if(!this.opt.data || (this.opt.data && typeof this.opt.data !== 'object'))
             this.opt.data = {}
 
@@ -501,7 +502,7 @@ define(['yua'], function(yua){
         var _this = this;
         // 回调已执行, 或已取消, 则直接返回, 防止重复执行
         if(!this.transport)
-            return
+            return this
 
         if(!this.opt.url)
             throw new Error('Invalid  request url')
@@ -631,6 +632,7 @@ define(['yua'], function(yua){
                 this.xhr.timeout = this.opt.timeout;
             }
         }
+        return this
         
     }
 
@@ -670,9 +672,9 @@ define(['yua'], function(yua){
             },
             cache: {},
             cid: 0,
-            version: '0.0.1-es5',
+            version: '1.0.0-es5',
         }
-        yua.ui.request = '0.0.1-es5'
+        yua.ui.request = request.version
     }
 
     return request
