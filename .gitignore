@@ -1,4 +1,4 @@
 *.min.js
 *.min.css
-./index.html
+index.html
 .vscode
