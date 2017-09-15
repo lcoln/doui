@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>first example</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <div :controller="test">
+        <template name="pages" config="pageOpts"></template>
+    </div>
+    <script src="./js/yua.js"></script>
+    <script>
+        ;(function(yua){
+            require(['/lib/pages/main.js'],function(){
+                var vm = yua({
+                    $id: "test",
+                    pageOpts: {
+                        total: 10,
+                        curr: 1
+                    }
+                })
+
+                yua.scan()
+            })
+        })(yua)
+    </script>
+</body>
+
+</html>
