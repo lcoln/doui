@@ -865,6 +865,7 @@ Renderer.prototype.html = function(html) {
 };
 
 Renderer.prototype.heading = function(text, level, raw) {
+    raw = text.replace(/<[^>]+>|<\/[^>]+>/g, '')
     return '<h'
         + level
         + ' class="md-hd" id="'
