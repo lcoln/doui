@@ -336,7 +336,7 @@ define(['yua'], function(yua){
                         result.statusText = 'parse error'
                     }
 
-                    _this.callback(result处理.error, result)
+                    _this.callback(result.error, result)
                     
 
 
