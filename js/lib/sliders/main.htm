@@ -1,0 +1,41 @@
+<div class="do-sliders" :if="sliderList.length" :mouseenter="$stopSlide()" :mouseleave="$startSlide()">
+    <a class="do-ui-font slider-btn" href="javascript:;"
+        :click="$go(-1)">&#xe8ed</a>
+
+    <div class="container">
+        <div class="box"
+            :attr="{style: 'width: ' + sliderList.length * 100 + '%;' + transform}">
+            <a  target="_blank"
+                :repeat="sliderList"
+                :attr="{style: 'width: ' + currWidth + ';', href: el.link || 'javascript:;'}">
+                <img :attr="{src: el.src}">
+                <p :if="el.title" 
+                    :attr="{style: el.titlaStyle + ';' ? el.titleStyle : ';'}"
+                    :html="el.title"
+                    class="default-class"></p>
+            </a>
+        </div>
+    </div>
+
+    <div class="btn" :attr="{style: 'bottom:' + (preview ? '-120px' : '0;')}">
+        <span :if="!preview"
+            href="javascript:;"
+            :class="{'no-preview-act': curr === $index}"
+            :repeat="sliderList"
+            :click="$jump($index)">
+        </span>
+        
+        <a class="btn-img" href="javascript:;"
+            :if="preview"
+            :class="{act: curr === $index || (curr >= maxNum && $index == maxNum - 1)}"
+            :click="$jump($index)"
+            :repeat="sliderBtnList">
+            <img
+                :class="{'preview-act': curr === $index ||  (curr >= maxNum && $index == maxNum - 1)}"
+                :attr-src="el.src" />
+        </a>
+    </div>
+
+    <a class="do-ui-font slider-btn" href="javascript:;"
+        :click="$go(1)">&#xe8eb</a>
+</div>
