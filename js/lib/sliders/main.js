@@ -6,8 +6,6 @@
 
 define(["yua", "text!./main.htm", "css!./main"], function(yua, tpl){
 
-    var auto
-
     /**
      * [获取当前幻灯片元素宽度]
      */
@@ -48,10 +46,10 @@ define(["yua", "text!./main.htm", "css!./main"], function(yua, tpl){
      * @return {[type]}    [description]
      */
     function autoSlide(vm){
-        var timer = setInterval(function(){
+        vm.auto = setTimeout(function(){
             vm.$go(1)
+            autoSlide(vm)
         }, vm.time)
-        return timer
     }
 
     return yua.component("sliders", {
@@ -78,13 +76,17 @@ define(["yua", "text!./main.htm", "css!./main"], function(yua, tpl){
 
             vm.$stopSlide = function(){
                 if(vm.autoSlide){
-                    clearInterval(auto)
+                    clearTimeout(vm.auto)
                 }
             }
 
             vm.$startSlide = function(){
                 if(vm.autoSlide)
-                    auto = autoSlide(vm)
+                    autoSlide(vm)
+            }
+
+            vm.$setSliderList = function(list){
+                vm.sliderList = list
             }
 
             vm.$watch('curr', function(val, old) {
@@ -109,25 +111,30 @@ define(["yua", "text!./main.htm", "css!./main"], function(yua, tpl){
                     vm.sliderBtnList = getBtnList(vm)
             }, false)
 
+            vm.$onSuccess(vm)
         },
         $ready: function(vm){
             vm.currWidth = getWidth()
             if(vm.autoSlide)
-                auto = autoSlide(vm)
+                autoSlide(vm)
 
-            vm.sliderBtnList = getBtnList(vm)
+            if(vm.preview)
+                vm.sliderBtnList = getBtnList(vm)
         },
         currWidth: 0,
         transform: '',
         curr: 0,
         sliderBtnList: [],
         maxNum: '',
+        auto: '',
 
         sliderList: [],
         autoSlide: '',
         time: 3000,
         preview: true,
 
+        $onSuccess: yua.noop,
+        $setSliderList: yua.noop,
         $jump: yua.noop,
         $stopSlide: yua.noop,
         $startSlide: yua.noop,

@@ -4,20 +4,21 @@
 
     <div class="container">
         <div class="box"
-            :attr="{style: 'width: ' + sliderList.length * 100 + '%;' + transform}">
+            :attr="{style: 'width:' + sliderList.length * 100 + '%;' + transform}">
             <a  target="_blank"
                 :repeat="sliderList"
-                :attr="{style: 'width: ' + currWidth + ';', href: el.link || 'javascript:;'}">
-                <img :attr="{src: el.src}">
+                :css="{width: currWidth}"
+                :attr="{href: el.link || 'javascript:;'}">
+                <img :attr-src="el.src">
                 <p :if="el.title" 
-                    :attr="{style: el.titlaStyle + ';' ? el.titleStyle : ';'}"
+                    :attr="{style: el.titlaStyle ? el.titleStyle + ';' : ''}"
                     :html="el.title"
                     class="default-class"></p>
             </a>
         </div>
     </div>
 
-    <div class="btn" :attr="{style: 'bottom:' + (preview ? '-120px' : '0;')}">
+    <div class="btn" :css="{bottom: (preview ? '-120px' : '0;')}">
         <span :if="!preview"
             href="javascript:;"
             :class="{'no-preview-act': curr === $index}"
