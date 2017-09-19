@@ -3609,6 +3609,10 @@ var attrDir = yua.directive("attr", {
         }
 
         for(var i in obj){
+            if(i === 'style'){
+                console.error('设置style样式, 请改用 :css指令')
+                continue
+            }
             if(i === 'href' || i === 'src'){
                 //处理IE67自动转义的问题
                 if(!root.hasAttribute)
