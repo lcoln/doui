@@ -14,7 +14,7 @@ define(['yua', 'lib/drag/main', 'css!./skin/def'], function(yua){
         return window.layer
     }
 
-    yua.ui.layer = '0.0.4-base'
+    yua.ui.layer = '1.0.0-base'
     var layerDom = {},
         layerObj = {},
         unique = null, //储存当前打开的1/2/3类型的弹窗
@@ -253,14 +253,11 @@ define(['yua', 'lib/drag/main', 'css!./skin/def'], function(yua){
     }*/
     __constructor.prototype = {
         dot: { //loading的子元素数量
-            0: 4,
-            1: 9,
-            2: 2,
-            3: 3,
-            4: 2,
-            5: 5,
-            6: 5,
-            7: 5
+            1: 0,
+            2: 0,
+            3: 5,
+            4: 5,
+            5: 9
         },
         timeout: null,
         create: function(){
@@ -327,7 +324,7 @@ define(['yua', 'lib/drag/main', 'css!./skin/def'], function(yua){
             }
         },
         getLoading: function(style){
-            return '<div class="do-ui-load load-style-'
+            return '<div class="loading-box style-'
                     + style
                     + '">'
                 + '<span class="dot-box">'
@@ -346,7 +343,7 @@ define(['yua', 'lib/drag/main', 'css!./skin/def'], function(yua){
                 }
                 
                 html += '>{{title}}'
-                    + '<a class="action-close def-font" :click="no(\'' + this.init.$id + '\')"></a>'
+                    + '<a class="action-close do-ui-font" :click="no(\'' + this.init.$id + '\')"></a>'
                     + '</div>'
             }
             return html
@@ -357,7 +354,7 @@ define(['yua', 'lib/drag/main', 'css!./skin/def'], function(yua){
                 return ''
             }
             if(this.init.type < 4 || this.init.type === 5 || this.init.specialMode){
-                return '<span class="def-font msg-icon icon-' + this.init.icon + '"></span>'
+                return '<span class="do-ui-font msg-icon icon-' + this.init.icon + '"></span>'
             }
             return ''
         },
