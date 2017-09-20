@@ -34,65 +34,58 @@ define(['yua', 'lib/drag/main', 'css!./skin/def'], function(yua){
             fixed: false, //是否固定不可拖拽
             offset: null, //弹窗出来时的坐标, 为数组,可有4个值,依次是 上右下左
             btns: ['确定', '取消'], //弹窗的2个按钮的文字
-            yes: close, //确定按钮对应的回调
-            no: close, //取消按钮对应的回调
+            yes: yua.noop, //确定按钮对应的回调
+            no: yua.noop, //取消按钮对应的回调
             success: null //弹窗初始化完成时的回调
-        };
+        },
+        uuid = function(){
+            return 'layer-' + (++lid)
+        },
+        close = function(id){
+            if(typeof id !== 'string' && typeof id !== 'number'){
+                return yua.error('要关闭的layer实例不存在')
+            }
+            if(/^\$wrap\-/.test(id) || layerObj['$wrap-' + id]){
 
-    function uuid(){
-        return 'layer-' + (++lid)
-    }
+                try {
+                    id = (layerObj['$wrap-' + id] ? '$wrap-' : '') + id;
+                    //未显示过,忽略
+                    if(!layerObj[id].show){
+                        return
+                    }
+                    layerObj[id].parentElem.replaceChild(layerObj[id].wrap, layerDom[id][1])
+                    layerObj[id].wrap.style.display = 'none'
+                    layerObj[id].show = false
 
+                }catch(err){}
+            }else{
+                try {
+                    document.body.removeChild(layerDom[id][1])
+                    document.body.removeChild(layerDom[id][0])
+                    unique = null
+                }catch(err){}
 
-    function close(id){
-        if(typeof id !== 'string' && typeof id !== 'number'){
-            return console.error(new Error('要关闭的layer实例不存在'))
-        }
-        if(/^\$wrap\-/.test(id) || layerObj['$wrap-' + id]){
-
-            try {
-                id = (layerObj['$wrap-' + id] ? '$wrap-' : '') + id;
-                //未显示过,忽略
-                if(!layerObj[id].show){
-                    return
-                }
-                layerObj[id].parentElem.replaceChild(layerObj[id].wrap, layerDom[id][1])
-                layerObj[id].wrap.style.display = 'none'
-                layerObj[id].show = false
-
-            }catch(err){}
-        }else{
-            try {
-                document.body.removeChild(layerDom[id][1])
-                document.body.removeChild(layerDom[id][0])
-                unique = null
-            }catch(err){}
-
-            delete layerDom[id]
-            delete yua.vmodels[id]
-        }
-        
-    }
-
-    function reapeat(str, num){
-        var idx = 0,
-            result = ''
-        while(idx < num){
-            result += str
-            idx++
-        }
-        return result
-    }
-
-    function fixOffset(val){
-        if(!val && val !== 0){
-            return 'auto'
-        }else{
-            return val
-        }
-    }
-
-    var __constructor = function(conf){
+                delete layerDom[id]
+                delete yua.vmodels[id]
+            }
+        },
+        reapeat = function(str, num){
+            var idx = 0,
+                result = ''
+            while(idx < num){
+                result += str
+                idx++
+            }
+            return result
+        },
+        fixOffset = function (val){
+            if(!val && val !== 0){
+                return 'auto'
+            }else{
+                return val
+            }
+        },
+        __constructor = function(conf){
             if(conf){
                 this.ready(conf).append().show()
             }
@@ -106,7 +99,7 @@ define(['yua', 'lib/drag/main', 'css!./skin/def'], function(yua){
                 }else{
                     conf = {}
                 }
-                conf.icon = 6
+                conf.icon = 5
                 conf.content = msg
                 return __layer.open(conf)
             },
@@ -119,7 +112,7 @@ define(['yua', 'lib/drag/main', 'css!./skin/def'], function(yua){
                     conf = {}
                 }
                 conf.type = 2
-                conf.icon = 8
+                conf.icon = 0
                 conf.content = msg
                 return __layer.open(conf)
             },
@@ -161,7 +154,7 @@ define(['yua', 'lib/drag/main', 'css!./skin/def'], function(yua){
             },
             tips: function(msg, elem, conf){
                 if(!(elem instanceof HTMLElement)){
-                    return console.error(new Error('tips类型必须指定一个目标容器'))
+                    return yua.error('tips类型必须指定一个目标容器')
                 }
                 if(typeof conf !== 'object'){
                     var tmp = conf
@@ -194,11 +187,13 @@ define(['yua', 'lib/drag/main', 'css!./skin/def'], function(yua){
                 }
                 var conf = {
                         type: 3,
-                        icon: 7,
                         prompt: '',
                         title: msg,
-                        content: '<input class="prompt-value" :duplex="prompt" />',
+                        content: '<input class="prompt-value" :class="{alert: !prompt}" :duplex="prompt" />',
                         yes: function(id){
+                            if(!yua.vmodels[id].prompt){
+                                return
+                            }
                             yescb(id, yua.vmodels[id].prompt)
                         }
                     }
@@ -242,6 +237,7 @@ define(['yua', 'lib/drag/main', 'css!./skin/def'], function(yua){
         };
     
 
+    defconf.yes = defconf.no = close
     /*type: { // 弹窗类型对应的id值
         1: 'alert',
         2: 'confirm',
@@ -300,7 +296,7 @@ define(['yua', 'lib/drag/main', 'css!./skin/def'], function(yua){
 
             layBox.innerHTML = this.getMenubar()
                 + '<div class="layer-content do-layer-cl '
-                    + (this.init.icon === 0 && 'none-icon' || '')
+                    + (this.init.icon < 0 && 'none-icon' || '')
                     + '" style="'
                     + boxcss
                     + '">'
@@ -350,7 +346,7 @@ define(['yua', 'lib/drag/main', 'css!./skin/def'], function(yua){
         },
         //获取窗口内容的图标
         getIcon: function(){
-            if(this.init.icon === 0){
+            if(this.init.icon < 0){
                 return ''
             }
             if(this.init.type < 4 || this.init.type === 5 || this.init.specialMode){
@@ -514,7 +510,7 @@ define(['yua', 'lib/drag/main', 'css!./skin/def'], function(yua){
         },
         update: function(val){
             if(!val){
-                return console.error(new Error(':layer指令格式不正确或无效属性. [' + this.name + '="' + this.expr) + '"]')
+                return yua.error(':layer指令格式不正确或无效属性. [' + this.name + '="' + this.expr + '"]')
             }
 
             var _this = this,
@@ -557,7 +553,7 @@ define(['yua', 'lib/drag/main', 'css!./skin/def'], function(yua){
                     tipsCont = document.createElement('div');
 
 
-                tipsBox.className = 'do-layer skin-def type-5'
+                tipsBox.className = 'do-layer skin-' + (init.skin || 'def') + ' type-5'
                 tipsBox.style.left = ol + (ew * 0.7) + 'px'
                 if(init.background){
                     tipsBox.style.background = init.background
