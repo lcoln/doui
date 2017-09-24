@@ -103,17 +103,19 @@ define(['yua', 'lib/drag/main', 'css!./skin/def'], function(yua){
                 conf.content = msg
                 return __layer.open(conf)
             },
-            confirm: function(msg, conf){
-                if(typeof conf === 'function'){
-                    conf = {yes: conf}
-                }else if(typeof conf === 'object'){
-                    conf = conf
-                }else{
-                    conf = {}
+            confirm: function(msg, yescb, nocb){
+                var conf = {}
+                if(typeof yescb === 'function'){
+                    conf = {yes: yescb}
+                }else if(typeof yescb === 'object'){
+                    conf = yescb
                 }
                 conf.type = 2
                 conf.icon = 0
                 conf.content = msg
+                if(typeof nocb === 'function'){
+                    conf.no = nocb
+                }
                 return __layer.open(conf)
             },
             msg: function(msg, conf){
@@ -181,7 +183,7 @@ define(['yua', 'lib/drag/main', 'css!./skin/def'], function(yua){
                 conf.menubar = false;
                 return __layer.open(conf)
             },
-            prompt: function(msg, yescb, nocb){
+            prompt: function(msg, yescb){
                 if(typeof yescb !== 'function'){
                     return console.error('argument [callback] requires a function, but ' + (typeof yescb) + ' given')
                 }
@@ -197,9 +199,6 @@ define(['yua', 'lib/drag/main', 'css!./skin/def'], function(yua){
                             yescb(id, yua.vmodels[id].prompt)
                         }
                     }
-                if(typeof nocb === 'function'){
-                    conf.no = nocb
-                }
                 return __layer.open(conf)
             },
             use: function(skin, callback){
