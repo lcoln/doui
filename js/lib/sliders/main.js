@@ -95,7 +95,7 @@ define(["yua", "text!./main.htm", "css!./main"], function(yua, tpl){
                 if(vm.currWidth.indexOf('px') > -1)
                     width = vm.currWidth.slice(0, vm.currWidth.indexOf('px'))
 
-                vm.transform = 'transform: translate(' + (-width * val) + 'px, 0);'
+                vm.transform = 'translate(' + (-width * val) + 'px, 0)'
                 if(vm.preview)
                     vm.sliderBtnList = getBtnList(vm)
             })
@@ -106,7 +106,7 @@ define(["yua", "text!./main.htm", "css!./main"], function(yua, tpl){
                 if(vm.currWidth.indexOf('px') > -1)
                     width = vm.currWidth.slice(0, vm.currWidth.indexOf('px'))
 
-                vm.transform = 'transform: translate(' + (-width * vm.curr) + 'px, 0);'
+                vm.transform = 'translate(' + (-width * vm.curr) + 'px, 0)'
                 if(vm.preview)
                     vm.sliderBtnList = getBtnList(vm)
             }, false)
@@ -125,8 +125,8 @@ define(["yua", "text!./main.htm", "css!./main"], function(yua, tpl){
         transform: '',
         curr: 0,
         sliderBtnList: [],
-        maxNum: '',
-        auto: '',
+        maxNum: 0,
+        auto: yua.noop,
 
         sliderList: [],
         autoSlide: '',

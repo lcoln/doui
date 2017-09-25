@@ -4,14 +4,13 @@
 
     <div class="container">
         <div class="box"
-            :attr="{style: 'width:' + sliderList.length * 100 + '%;' + transform}">
+            :css="{width: sliderList.length * 100 + '%', transform: transform}">
             <a  target="_blank"
                 :repeat="sliderList"
                 :css="{width: currWidth}"
                 :attr="{href: el.link || 'javascript:;'}">
                 <img :attr-src="el.src">
                 <p :if="el.title" 
-                    :attr="{style: el.titlaStyle ? el.titleStyle + ';' : ''}"
                     :html="el.title"
                     class="default-class"></p>
             </a>
